@@ -21,7 +21,7 @@ const CreateHrPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
     e.preventDefault();
@@ -29,8 +29,8 @@ const CreateHrPage = () => {
       const res = await register({
         email: formData.email,
         password: formData.password,
-        name:formData.name,
-        role:formData.role
+        name: formData.name,
+        role: formData.role,
       });
       //console.log(res);
 
@@ -38,7 +38,7 @@ const CreateHrPage = () => {
         console.log(res.data.message);
 
         toast.success(res.data.message);
-        setFormData({ email: "", password: "",name:"",role:"" });
+        setFormData({ email: "", password: "", name: "", role: "" });
         // dispatch(hrExists(res!.data!.hr))
         navigate("/");
       } else {
@@ -54,8 +54,7 @@ const CreateHrPage = () => {
 
   return (
     <div
-    className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 overflow-hidden"
-
+      className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 overflow-hidden"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }} // Hides scrollbar
     >
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-2xl">
@@ -121,7 +120,6 @@ const CreateHrPage = () => {
             >
               <option value="Hr-Admin">Hr-Admin</option>
               <option value="Super-Admin">Super-Admin</option>
-              
             </select>
           </div>
 

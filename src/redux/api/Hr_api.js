@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 export const userAPI = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -17,22 +16,27 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["hr"],
     }),
-    register:builder.mutation({
-      query:(hrData) =>({
-        url:"",
-        method:"POST",
-        body:hrData
+    register: builder.mutation({
+      query: (hrData) => ({
+        url: "",
+        method: "POST",
+        body: hrData,
       }),
-      invalidatesTags:["hr"]
+      invalidatesTags: ["hr"],
     }),
-    logout:builder.mutation({
-      query:()=>({
-        url:"logout",
-        method:"POST"
+    logout: builder.mutation({
+      query: () => ({
+        url: "logout",
+        method: "POST",
       }),
-      invalidatesTags:["hr"]
-    })
+      invalidatesTags: ["hr"],
+    }),
   }),
 });
 
-export const {useLoginMutation,useRegisterMutation,useUserInfoQuery,useLogoutMutation} = userAPI
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useUserInfoQuery,
+  useLogoutMutation,
+} = userAPI;

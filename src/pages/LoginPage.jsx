@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 
-
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -47,8 +46,6 @@ const RegisterPage = () => {
     }
     // You can add logic to send data to a backend server here
   };
-
-  
 
   return (
     <div

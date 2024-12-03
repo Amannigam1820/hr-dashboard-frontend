@@ -46,8 +46,8 @@ function App() {
         .split("; ")
         .find((row) => row.startsWith("token="))
         ?.split("=")[1];
-        console.log(token) ,">>>>>>>>>>>>>>>>>>>>>>>>token";
-        
+      console.log(token, ">>>>>>>>>>>>>>>>>>>>>>>>token");
+
       try {
         const response = await fetch("http://127.0.0.1:8080/api/hr/me", {
           method: "GET",

@@ -1,34 +1,29 @@
 import React from "react";
-import { Link,useNavigate } from "react-router-dom";
-import {useLogoutMutation} from "../redux/api/Hr_api.js"
+import { Link, useNavigate } from "react-router-dom";
+import { useLogoutMutation } from "../redux/api/Hr_api.js";
 
 import toast from "react-hot-toast";
 
-
 const Navbar = () => {
-  
   const [logout] = useLogoutMutation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const user = {
     id: 1,
     role: "hr-admin", // Change this to "hr-admin" to test different roles
-    isLoggedIn: true, // Simulating login status
+    isLoggedIn: false, // Simulating login status
   };
 
-  const handleLogout  = async() =>{
+  const handleLogout = async () => {
     try {
-      const res = await logout({
-        
-      });
+      const res = await logout({});
       //console.log(res);
 
       if ("data" in res) {
         console.log(res.data.message);
 
         toast.success(res.data.message);
-        user.isLoggedIn = false
-        
-        
+        user.isLoggedIn = false;
+
         navigate("/login");
       } else {
         const error = res.error;
@@ -38,9 +33,7 @@ const Navbar = () => {
     } catch (error) {
       toast.error("Signin Failed");
     }
-  }
-  console.log(user);
-  
+  };
 
   return (
     <nav className="bg-blue-400 shadow-md sticky">
@@ -61,15 +54,23 @@ const Navbar = () => {
                 Employees
               </Link>
               {user.role === "super-admin" && (
-                <Link to="/create-hr" className="text-white hover:text-blue-200" >
+                <Link
+                  to="/create-hr"
+                  className="text-white hover:text-blue-200"
+                >
                   Create New HR
                 </Link>
               )}
-              <button className="text-white hover:text-blue-200" onClick={handleLogout}>Logout</button>
+              <button
+                className="text-white hover:text-blue-200"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white hover:text-blue-200" >
+              <Link to="/login" className="text-white hover:text-blue-200">
                 Login
               </Link>
               {/* <Link to="/register" className="text-white hover:text-blue-200">
