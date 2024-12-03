@@ -5,6 +5,7 @@ export const userAPI = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://127.0.0.1:8080/api/hr/",
+    credentials: "include",
   }),
   tagTypes: ["hr"],
   endpoints: (builder) => ({
@@ -18,13 +19,20 @@ export const userAPI = createApi({
     }),
     register:builder.mutation({
       query:(hrData) =>({
-        url:"register",
+        url:"",
         method:"POST",
         body:hrData
+      }),
+      invalidatesTags:["hr"]
+    }),
+    logout:builder.mutation({
+      query:()=>({
+        url:"logout",
+        method:"POST"
       }),
       invalidatesTags:["hr"]
     })
   }),
 });
 
-export const {useLoginMutation,useRegisterMutation} = userAPI
+export const {useLoginMutation,useRegisterMutation,useUserInfoQuery,useLogoutMutation} = userAPI

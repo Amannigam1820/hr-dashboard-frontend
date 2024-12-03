@@ -1,21 +1,54 @@
 import React, { useState } from "react";
+import { useRegisterMutation } from "../redux/api/Hr_api.js";
+
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const CreateHrPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    role: "", // Default value for the dropdown
+    role: "Hr-Admin", // Default value for the dropdown
     password: "",
   });
+  const navigate = useNavigate();
+  const [register] = useRegisterMutation();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log("Form Data Submitted:", formData);
+    e.preventDefault();
+    try {
+      const res = await register({
+        email: formData.email,
+        password: formData.password,
+        name:formData.name,
+        role:formData.role
+      });
+      //console.log(res);
+
+      if ("data" in res) {
+        console.log(res.data.message);
+
+        toast.success(res.data.message);
+        setFormData({ email: "", password: "",name:"",role:"" });
+        // dispatch(hrExists(res!.data!.hr))
+        navigate("/");
+      } else {
+        const error = res.error;
+        const message = error?.data?.message || "An unknown error occurred.";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Signin Failed");
+    }
     // You can add logic to send data to a backend server here
   };
 
@@ -86,7 +119,7 @@ const CreateHrPage = () => {
               className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-purple-500 focus:border-purple-500 transition"
               required
             >
-                <option value="Hr-Admin">Hr-Admin</option>
+              <option value="Hr-Admin">Hr-Admin</option>
               <option value="Super-Admin">Super-Admin</option>
               
             </select>

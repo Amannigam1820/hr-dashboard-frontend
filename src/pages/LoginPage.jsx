@@ -1,28 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLoginMutation } from "../redux/api/Hr_api.js";
+
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    
     email: "",
-   
+
     password: "",
   });
+  const navigate = useNavigate();
+  const [login] = useLoginMutation();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
+    try {
+      const res = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+      //console.log(res);
+
+      if ("data" in res) {
+        console.log(res.data.message);
+
+        toast.success(res.data.message);
+        setFormData({ email: "", password: "" });
+        // dispatch(hrExists(res!.data!.hr))
+        navigate("/");
+      } else {
+        const error = res.error;
+        const message = error?.data?.message || "An unknown error occurred.";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Signin Failed");
+    }
     // You can add logic to send data to a backend server here
   };
 
+  
+
   return (
     <div
-    className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 overflow-hidden"
-
+      className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 overflow-hidden"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }} // Hides scrollbar
     >
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-2xl">
@@ -30,9 +60,6 @@ const RegisterPage = () => {
           Login
         </h2>
         <form onSubmit={handleSubmit}>
-          
-         
-
           {/* Email Field */}
           <div className="mb-4">
             <label
@@ -54,7 +81,6 @@ const RegisterPage = () => {
           </div>
 
           {/* Role Dropdown */}
-          
 
           {/* Password Field */}
           <div className="mb-4">

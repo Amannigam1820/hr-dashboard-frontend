@@ -1,13 +1,46 @@
 import React from "react";
 import { Link,useNavigate } from "react-router-dom";
+import {useLogoutMutation} from "../redux/api/Hr_api.js"
+
+import toast from "react-hot-toast";
+
 
 const Navbar = () => {
+  
+  const [logout] = useLogoutMutation();
   const navigate = useNavigate()
   const user = {
     id: 1,
-    role: "super-admin", // Change this to "hr-admin" to test different roles
+    role: "hr-admin", // Change this to "hr-admin" to test different roles
     isLoggedIn: true, // Simulating login status
   };
+
+  const handleLogout  = async() =>{
+    try {
+      const res = await logout({
+        
+      });
+      //console.log(res);
+
+      if ("data" in res) {
+        console.log(res.data.message);
+
+        toast.success(res.data.message);
+        user.isLoggedIn = false
+        
+        
+        navigate("/login");
+      } else {
+        const error = res.error;
+        const message = error?.data?.message || "An unknown error occurred.";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error("Signin Failed");
+    }
+  }
+  console.log(user);
+  
 
   return (
     <nav className="bg-blue-400 shadow-md sticky">
@@ -32,11 +65,11 @@ const Navbar = () => {
                   Create New HR
                 </Link>
               )}
-              <button className="text-white hover:text-blue-200">Logout</button>
+              <button className="text-white hover:text-blue-200" onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white hover:text-blue-200">
+              <Link to="/login" className="text-white hover:text-blue-200" >
                 Login
               </Link>
               {/* <Link to="/register" className="text-white hover:text-blue-200">
