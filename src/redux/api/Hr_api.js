@@ -31,6 +31,13 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["hr"],
     }),
+    userInfo: builder.query({
+      query: () => ({
+        url: "me",
+        method: "GET",
+      }),
+      providesTags: ["hr"],
+    }),
   }),
 });
 

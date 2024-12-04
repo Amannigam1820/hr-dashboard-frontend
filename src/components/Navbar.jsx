@@ -1,17 +1,25 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../redux/api/Hr_api.js";
+import { useDispatch, useSelector } from "react-redux";
+import {userNotExist} from "../redux/reducer/userReducer.js"
 
 import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [logout] = useLogoutMutation();
   const navigate = useNavigate();
-  const user = {
-    id: 1,
-    role: "hr-admin", // Change this to "hr-admin" to test different roles
-    isLoggedIn: false, // Simulating login status
-  };
+  const dispatch = useDispatch()
+  const user = useSelector((state)=>state.user)
+  //console.log(user.user.role);
+  
+  
+  
+  // const user = {
+  //   id: 1,
+  //   role: "hr-admin", // Change this to "hr-admin" to test different roles
+  //   isLoggedIn: true, // Simulating login status
+  // };
 
   const handleLogout = async () => {
     try {
@@ -21,8 +29,14 @@ const Navbar = () => {
       if ("data" in res) {
         console.log(res.data.message);
 
+
         toast.success(res.data.message);
-        user.isLoggedIn = false;
+
+        console.log("before dispatch call");
+        
+        dispatch(userNotExist())
+        console.log("after dispatch call");
+        
 
         navigate("/login");
       } else {
@@ -53,7 +67,7 @@ const Navbar = () => {
               <Link to="/employees" className="text-white hover:text-blue-200">
                 Employees
               </Link>
-              {user.role === "super-admin" && (
+              {user.user.role === "Super-Admin" && (
                 <Link
                   to="/create-hr"
                   className="text-white hover:text-blue-200"
