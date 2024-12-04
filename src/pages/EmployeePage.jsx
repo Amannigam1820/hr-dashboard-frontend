@@ -3,9 +3,6 @@ import { useTable, useSortBy, usePagination } from "react-table";
 // import { useAllEmployeeQuery } from "../redux/api/Hr_api";
 import axios from "axios";
 
-
-
-
 const columns = [
   {
     Header: "ID",
@@ -50,14 +47,41 @@ const columns = [
   {
     Header: "Experince Letter",
     accessor: "experience_letter",
+    Cell: ({ value }) => (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        <img
+          src={value}
+          alt="Resume"
+          className="h-12 w-12 object-cover rounded-md cursor-pointer"
+        />
+      </a>
+    ),
   },
   {
     Header: "Releiving Letter",
     accessor: "releiving_letter",
+    Cell: ({ value }) => (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        <img
+          src={value}
+          alt="Resume"
+          className="h-12 w-12 object-cover rounded-md cursor-pointer"
+        />
+      </a>
+    ),
   },
   {
     Header: "Reume",
     accessor: "resume",
+    Cell: ({ value }) => (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        <img
+          src={value}
+          alt="Resume"
+          className="h-12 w-12 object-cover rounded-md cursor-pointer"
+        />
+      </a>
+    ),
   },
   {
     Header: "Performance",
@@ -128,8 +152,8 @@ const EmployeePage = () => {
     axios
       .get("http://127.0.0.1:8080/api/employee/all", { withCredentials: true })
       .then((response) => {
-     //   console.log(typeof response.data.data); // Logs "object"
-      //  console.log(response.data.data); // Logs the actual object
+        //   console.log(typeof response.data.data); // Logs "object"
+        //  console.log(response.data.data); // Logs the actual object
 
         // If it's an object and you want to convert it to an array of objects
         const dataArray = Object.values(response.data.data); // Convert object to array
@@ -162,7 +186,7 @@ const EmployeePage = () => {
     {
       columns,
       data,
-       initialState: { pageSize: 6 }, // Set pageSize to 1 to show one row per page
+      initialState: { pageSize: 6 }, // Set pageSize to 1 to show one row per page
     },
     useSortBy,
     usePagination
@@ -209,7 +233,9 @@ const EmployeePage = () => {
                       {...cell.getCellProps()}
                       className="px-4 py-3 text-xs text-gray-700 border-b border-gray-200"
                     >
-                      {cell.value === null || cell.value === undefined || cell.value === ""
+                      {cell.value === null ||
+                      cell.value === undefined ||
+                      cell.value === ""
                         ? "-"
                         : cell.render("Cell")}
                     </td>

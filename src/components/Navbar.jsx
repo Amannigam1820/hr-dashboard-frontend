@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../redux/api/Hr_api.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,13 +11,19 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
+  useEffect(() => {
+    // This will ensure any change in user state will trigger a re-render.
+  }, [user]);
+
   const handleLogout = async () => {
     try {
       const res = await logout({});
       if ("data" in res) {
         toast.success(res.data.message);
         dispatch(userNotExist());
+
         navigate("/login");
+        window.location.reload();
       } else {
         const error = res.error;
         const message = error?.data?.message || "An unknown error occurred.";
