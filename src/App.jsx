@@ -8,12 +8,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom"; // Import the ProtectedRoute component
 import CreateHrPage from "./pages/CreateHrPage.jsx";
 import { useEffect, useState } from "react";
-import {useUserInfoQuery,useAllEmployeeQuery} from "./redux/api/Hr_api.js"
-import {userExists} from "./redux/reducer/userReducer.js"
+import { useUserInfoQuery, useAllEmployeeQuery } from "./redux/api/Hr_api.js";
+import { userExists } from "./redux/reducer/userReducer.js";
 import { useDispatch, useSelector } from "react-redux";
 import EmployeeList from "./pages/EmployeePage.jsx";
-
-
+import CreateEmployeePage from "./pages/CreateEmployeePage.jsx";
 
 // const user = {
 //   id: 1,
@@ -23,12 +22,11 @@ import EmployeeList from "./pages/EmployeePage.jsx";
 
 function App() {
   const { data, error, isLoading } = useUserInfoQuery();
-  const dispatch = useDispatch()
-  const user = useSelector((state)=>state.user)
- // console.log(user);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  // console.log(user);
   // const { data:employeedate , error:errors, isLoading:loaddings } = useAllEmployeeQuery();
-   // console.log(employeedate);
-  
+  // console.log(employeedate);
 
   // Handle the fetched data
   useEffect(() => {
@@ -48,23 +46,17 @@ function App() {
     }
   }, [data, error, isLoading, dispatch]);
 
-   
-
   return (
     <Router>
       <Navbar />
       <Routes>
         {/* Use ProtectedRoute for home or other protected pages */}
-        <Route
-          path="/"
-          element={
-           <HomePage/>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-employee" element={<CreateEmployeePage />} />
         <Route
           path="/create-hr"
           element={
-            <CreateHrPage/>
+            <CreateHrPage />
             // <ProtectedRoute
             //   isLoggedIn={user}
             //   element={<CreateHrPage />}
@@ -74,7 +66,7 @@ function App() {
         <Route
           path="/employees"
           element={
-            <EmployeeList/>
+            <EmployeeList />
             // <ProtectedRoute
             //   isLoggedIn={user}
             //   element={<CreateHrPage />}
@@ -88,8 +80,8 @@ function App() {
         /> */}
         <Route
           path="/login"
-          element={<Login/>}
-         // element={user ? <Navigate to="/" /> : <Login />}
+          element={<Login />}
+          // element={user ? <Navigate to="/" /> : <Login />}
         />
       </Routes>
       <Toaster position="bottom-center" />
@@ -99,12 +91,11 @@ function App() {
 
 export default App;
 
-
- // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: `Bearer ${token}`,
-          //   Cookie: `token=${token}`,// Add the token in the Authorization header
-          // },
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        // },
+// headers: {
+//   "Content-Type": "application/json",
+//   Authorization: `Bearer ${token}`,
+//   Cookie: `token=${token}`,// Add the token in the Authorization header
+// },
+//   headers: {
+//     'Content-Type': 'application/json',
+// },

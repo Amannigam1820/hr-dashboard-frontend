@@ -6,7 +6,7 @@ export const userAPI = createApi({
     baseUrl: "http://127.0.0.1:8080/api/",
     credentials: "include",
   }),
-  tagTypes: ["hr","employee"],
+  tagTypes: ["hr", "employee"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (hr) => ({
@@ -38,13 +38,21 @@ export const userAPI = createApi({
       }),
       providesTags: ["hr"],
     }),
-    allEmployee:builder.query({
-      query:()=>({
-        url:"employee/all",
-        method:"GET"
+    allEmployee: builder.query({
+      query: () => ({
+        url: "employee/all",
+        method: "GET",
       }),
-invalidatesTags:["emplyee"]
-    })
+      invalidatesTags: ["employee"],
+    }),
+    addEmployee: builder.mutation({
+      query: (empData) => ({
+        url: "employee/",
+        method: "POST",
+        body: empData,
+      }),
+      invalidatesTags: ["employee"],
+    }),
   }),
 });
 
@@ -54,4 +62,5 @@ export const {
   useUserInfoQuery,
   useLogoutMutation,
   useAllEmployeeQuery,
+  useAddEmployeeMutation
 } = userAPI;

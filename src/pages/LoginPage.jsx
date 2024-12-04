@@ -102,7 +102,7 @@ const RegisterPage = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-purple-500 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-purple-600 transition"
+            className="w-full bg-blue-400 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-purple-600 transition"
           >
             Login
           </button>

@@ -2,34 +2,21 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../redux/api/Hr_api.js";
 import { useDispatch, useSelector } from "react-redux";
-import {userNotExist} from "../redux/reducer/userReducer.js"
-
+import { userNotExist } from "../redux/reducer/userReducer.js";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [logout] = useLogoutMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const user = useSelector((state)=>state.user)
- 
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const handleLogout = async () => {
     try {
       const res = await logout({});
-      //console.log(res);
-
       if ("data" in res) {
-        console.log(res.data.message);
-
-
         toast.success(res.data.message);
-
-        console.log("before dispatch call");
-        
-        dispatch(userNotExist())
-        console.log("after dispatch call");
-        
-
+        dispatch(userNotExist());
         navigate("/login");
       } else {
         const error = res.error;
@@ -42,10 +29,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-400 shadow-md sticky">
+    <nav className="bg-blue-400 shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center" >
+        <Link to="/" className="flex items-center">
           <img src="/onelab.png" alt="MyApp Logo" className="h-8 w-auto" />
         </Link>
 
@@ -58,6 +45,12 @@ const Navbar = () => {
               </Link>
               <Link to="/employees" className="text-white hover:text-blue-200">
                 Employees
+              </Link>
+              <Link
+                to="/create-employee"
+                className="text-white hover:text-blue-200"
+              >
+                Add Employee
               </Link>
               {user.user.role === "Super-Admin" && (
                 <Link
@@ -79,9 +72,6 @@ const Navbar = () => {
               <Link to="/login" className="text-white hover:text-blue-200">
                 Login
               </Link>
-              {/* <Link to="/register" className="text-white hover:text-blue-200">
-                Register
-              </Link> */}
             </>
           )}
         </div>

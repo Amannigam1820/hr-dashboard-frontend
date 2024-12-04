@@ -128,8 +128,8 @@ const EmployeePage = () => {
     axios
       .get("http://127.0.0.1:8080/api/employee/all", { withCredentials: true })
       .then((response) => {
-        console.log(typeof response.data.data); // Logs "object"
-        console.log(response.data.data); // Logs the actual object
+     //   console.log(typeof response.data.data); // Logs "object"
+      //  console.log(response.data.data); // Logs the actual object
 
         // If it's an object and you want to convert it to an array of objects
         const dataArray = Object.values(response.data.data); // Convert object to array
@@ -144,7 +144,7 @@ const EmployeePage = () => {
         setLoading(false); // Set loading to false in case of error
       });
   }, []);
-  console.log(data);
+  //console.log(data);
 
   const {
     getTableProps,
@@ -162,7 +162,7 @@ const EmployeePage = () => {
     {
       columns,
       data,
-      // initialState: { pageSize: 1 }, // Set pageSize to 1 to show one row per page
+       initialState: { pageSize: 6 }, // Set pageSize to 1 to show one row per page
     },
     useSortBy,
     usePagination
@@ -207,7 +207,7 @@ const EmployeePage = () => {
                   {row.cells.map((cell) => (
                     <td
                       {...cell.getCellProps()}
-                      className="px-4 py-3 text-sm text-gray-700 border-b border-gray-200"
+                      className="px-4 py-3 text-xs text-gray-700 border-b border-gray-200"
                     >
                       {cell.value === null || cell.value === undefined || cell.value === ""
                         ? "-"
