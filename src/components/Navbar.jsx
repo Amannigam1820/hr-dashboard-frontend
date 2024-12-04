@@ -11,15 +11,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const user = useSelector((state)=>state.user)
-  //console.log(user.user.role);
-  
-  
-  
-  // const user = {
-  //   id: 1,
-  //   role: "hr-admin", // Change this to "hr-admin" to test different roles
-  //   isLoggedIn: true, // Simulating login status
-  // };
+ 
 
   const handleLogout = async () => {
     try {
@@ -53,9 +45,9 @@ const Navbar = () => {
     <nav className="bg-blue-400 shadow-md sticky">
       <div className="container mx-auto px-4 py-3 flex items-center">
         {/* Logo */}
-        <div className="flex items-center">
+        <Link to="/" className="flex items-center" >
           <img src="/onelab.png" alt="MyApp Logo" className="h-8 w-auto" />
-        </div>
+        </Link>
 
         {/* Navigation Links */}
         <div className="ml-auto flex items-center space-x-6">

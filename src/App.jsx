@@ -8,9 +8,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Navigate } from "react-router-dom"; // Import the ProtectedRoute component
 import CreateHrPage from "./pages/CreateHrPage.jsx";
 import { useEffect, useState } from "react";
-import {useUserInfoQuery} from "./redux/api/Hr_api.js"
+import {useUserInfoQuery,useAllEmployeeQuery} from "./redux/api/Hr_api.js"
 import {userExists} from "./redux/reducer/userReducer.js"
 import { useDispatch, useSelector } from "react-redux";
+import EmployeeList from "./pages/EmployeePage.jsx";
+
 
 
 // const user = {
@@ -23,7 +25,9 @@ function App() {
   const { data, error, isLoading } = useUserInfoQuery();
   const dispatch = useDispatch()
   const user = useSelector((state)=>state.user)
-  console.log(user);
+ // console.log(user);
+  // const { data:employeedate , error:errors, isLoading:loaddings } = useAllEmployeeQuery();
+   // console.log(employeedate);
   
 
   // Handle the fetched data
@@ -61,6 +65,16 @@ function App() {
           path="/create-hr"
           element={
             <CreateHrPage/>
+            // <ProtectedRoute
+            //   isLoggedIn={user}
+            //   element={<CreateHrPage />}
+            // />
+          }
+        />
+        <Route
+          path="/employees"
+          element={
+            <EmployeeList/>
             // <ProtectedRoute
             //   isLoggedIn={user}
             //   element={<CreateHrPage />}

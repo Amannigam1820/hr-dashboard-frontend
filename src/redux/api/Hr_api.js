@@ -3,14 +3,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const userAPI = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://127.0.0.1:8080/api/hr/",
+    baseUrl: "http://127.0.0.1:8080/api/",
     credentials: "include",
   }),
-  tagTypes: ["hr"],
+  tagTypes: ["hr","employee"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (hr) => ({
-        url: "login",
+        url: "hr/login",
         method: "POST",
         body: hr,
       }),
@@ -18,7 +18,7 @@ export const userAPI = createApi({
     }),
     register: builder.mutation({
       query: (hrData) => ({
-        url: "",
+        url: "hr/",
         method: "POST",
         body: hrData,
       }),
@@ -26,18 +26,25 @@ export const userAPI = createApi({
     }),
     logout: builder.mutation({
       query: () => ({
-        url: "logout",
+        url: "hr/logout",
         method: "POST",
       }),
       invalidatesTags: ["hr"],
     }),
     userInfo: builder.query({
       query: () => ({
-        url: "me",
+        url: "hr/me",
         method: "GET",
       }),
       providesTags: ["hr"],
     }),
+    allEmployee:builder.query({
+      query:()=>({
+        url:"employee/all",
+        method:"GET"
+      }),
+invalidatesTags:["emplyee"]
+    })
   }),
 });
 
@@ -46,4 +53,5 @@ export const {
   useRegisterMutation,
   useUserInfoQuery,
   useLogoutMutation,
+  useAllEmployeeQuery,
 } = userAPI;
