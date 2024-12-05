@@ -138,6 +138,30 @@ const columns = [
     Header: "Updated ON",
     accessor: "updated_at",
   },
+  {
+    Header: "Actions",
+    accessor: "actions",
+    Cell: ({ row }) => (
+      <div className="flex space-x-2">
+        {/* Edit Button */}
+        <button
+          onClick={() => handleEdit(row.original)}
+          className="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded hover:bg-blue-600"
+        >
+          Edit
+        </button>
+
+        {/* Delete Button */}
+        <button
+          onClick={() => handleDelete(row.original)}
+          className="px-2 py-1 bg-red-500 text-white text-xs font-semibold rounded hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </div>
+    ),
+  },
+  
 ];
 
 const EmployeePage = () => {
@@ -227,19 +251,18 @@ const EmployeePage = () => {
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } hover:bg-blue-50 transition-colors duration-200`}
-                >
-                  {row.cells.map((cell) => (
-                    <td
-                      {...cell.getCellProps()}
-                      className="px-4 py-3 text-xs text-gray-700 border-b border-gray-200"
-                    >
-                      {cell.value === null ||
-                      cell.value === undefined ||
-                      cell.value === ""
-                        ? "-"
-                        : cell.render("Cell")}
-                    </td>
-                  ))}
+                >{row.cells.map((cell) => (
+                  <td
+                    {...cell.getCellProps()}
+                    className="px-4 py-3 text-xs text-gray-700 border-b border-gray-200"
+                  >
+                    {cell.column.id === "actions"
+                      ? cell.render("Cell") // Render buttons for the actions column
+                      : cell.value === null || cell.value === undefined || cell.value === ""
+                      ? "-" // Render "-" for null/undefined/empty values
+                      : cell.render("Cell")} 
+                  </td>
+                ))}
                 </tr>
               );
             })}
