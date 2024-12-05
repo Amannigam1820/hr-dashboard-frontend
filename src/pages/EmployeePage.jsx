@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 // import { useAllEmployeeQuery } from "../redux/api/Hr_api";
 import axios from "axios";
+import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom";
 
 const columns = [
-  {
-    Header: "ID",
-    accessor: "id",
-  },
+
   {
     Header: "Name",
     accessor: "name",
@@ -145,7 +144,7 @@ const columns = [
       <div className="flex space-x-2">
         {/* Edit Button */}
         <button
-          onClick={() => handleEdit(row.original)}
+        //  onClick={() => handleEdit(row.original)}
           className="px-2 py-1 bg-blue-500 text-white text-xs font-semibold rounded hover:bg-blue-600"
         >
           Edit
@@ -163,13 +162,33 @@ const columns = [
   },
   
 ];
+const handleDelete = async (employee) => {
+  try {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${employee.name}?`
+    );
+    if (!confirmed) return;
 
+    // Make DELETE request
+    await axios.delete(`http://127.0.0.1:8080/api/employee/${employee.id}`, {
+      withCredentials: true,
+    });
+
+    
+toast.success(`Employee ${employee.name} deleted successfully!`)
+window.location.reload()
+    //alert(`Employee ${employee.name} deleted successfully!`);
+  } catch (err) {
+    alert("Failed to delete the employee: " + err.message);
+  }
+};
 const EmployeePage = () => {
   // const { data, error, isLoading } = useAllEmployeeQuery();
   // console.log(data);
   const [data, setData] = useState([{}]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Fetch data from the API with credentials
@@ -194,6 +213,8 @@ const EmployeePage = () => {
   }, []);
   //console.log(data);
 
+  
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -215,6 +236,10 @@ const EmployeePage = () => {
     useSortBy,
     usePagination
   );
+
+  const handleRowClick = (employeeId) => {
+    navigate(`/employee-detail/${employeeId}`); // Redirect to employee-detail page with employee ID
+  };
 
   return (
     <>
@@ -250,7 +275,8 @@ const EmployeePage = () => {
                   {...row.getRowProps()}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-blue-50 transition-colors duration-200`}
+                  } hover:bg-blue-50 transition-colors duration-200 cursor-pointer`}
+                  onClick={() => handleRowClick(row.original.id)}
                 >{row.cells.map((cell) => (
                   <td
                     {...cell.getCellProps()}

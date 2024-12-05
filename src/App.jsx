@@ -13,6 +13,7 @@ import { userExists } from "./redux/reducer/userReducer.js";
 import { useDispatch, useSelector } from "react-redux";
 import EmployeeList from "./pages/EmployeePage.jsx";
 import CreateEmployeePage from "./pages/CreateEmployeePage.jsx";
+import EmployeeDetailPage from "./pages/EmployeeDetail.jsx";
 
 // const user = {
 //   id: 1,
@@ -53,6 +54,7 @@ function App() {
         {/* Use ProtectedRoute for home or other protected pages */}
         <Route path="/" element={<HomePage />} />
         <Route path="/create-employee" element={<CreateEmployeePage />} />
+        <Route path="/employee-detail/:id" element={<EmployeeDetailPage/>} />
         <Route
           path="/create-hr"
           element={
@@ -91,11 +93,3 @@ function App() {
 
 export default App;
 
-// headers: {
-//   "Content-Type": "application/json",
-//   Authorization: `Bearer ${token}`,
-//   Cookie: `token=${token}`,// Add the token in the Authorization header
-// },
-//   headers: {
-//     'Content-Type': 'application/json',
-// },

@@ -53,6 +53,14 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["employee"],
     }),
+    deleteEmployee: builder.mutation({
+      query: (empId) => ({
+        url: `employee/${empId}`,
+        method: "DELETE",
+        
+      }),
+      invalidatesTags: ["employee"],
+    }),
   }),
 });
 
@@ -62,5 +70,5 @@ export const {
   useUserInfoQuery,
   useLogoutMutation,
   useAllEmployeeQuery,
-  useAddEmployeeMutation
+  useAddEmployeeMutation,
 } = userAPI;
