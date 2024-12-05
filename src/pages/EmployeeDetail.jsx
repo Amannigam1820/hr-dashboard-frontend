@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useUpdateEmployeeMutation } from "../redux/api/Hr_api.js"; // Import the updateEmployee mutation
 
 const EmployeeDetailPage = () => {
   const { id } = useParams();
@@ -11,6 +12,7 @@ const EmployeeDetailPage = () => {
   const [modalOpen, setModalOpen] = useState(false);  // Modal visibility state
   const [editedEmployee, setEditedEmployee] = useState({}); // State to hold edited employee data
   const navigate = useNavigate();
+  const [updateEmployee, { isLoading: isUpdating }] = useUpdateEmployeeMutation(); // Destructure the mutation
 
   useEffect(() => {
     axios
@@ -56,15 +58,17 @@ const EmployeeDetailPage = () => {
     });
   };
 
+  console.log(editedEmployee);
+  
+
   const handleSaveChanges = async () => {
     try {
-      await axios.put(`http://127.0.0.1:8080/api/employee/${id}`, editedEmployee, {
-        withCredentials: true,
-      });
-
+      // Call the updateEmployee mutation
+      const res = await updateEmployee({ id, empData: editedEmployee })
+      console.log(res);
       toast.success('Employee details updated successfully!');
-      setModalOpen(false);  // Close the modal after successful update
-      setEmployee(editedEmployee);  // Update the displayed employee data
+      setModalOpen(false); // Close the modal after successful update
+      setEmployee(editedEmployee); // Update the displayed employee data
     } catch (err) {
       toast.error('Error updating employee details: ' + err.message);
     }
@@ -229,73 +233,21 @@ const EmployeeDetailPage = () => {
                   placeholder="Enter employee's address"
                 />
               </div>
-              <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Contact Number:</label>
-                <input
-                  type="text"
-                  name="contact_number"
-                  value={editedEmployee.contact_number}
-                  onChange={handleModalChange}
-                  className="px-4 py-2 border rounded-md"
-                  placeholder="Enter contact number"
-                />
-              </div>
-              <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Date of Birth:</label>
-                <input
-                  type="date"
-                  name="birth_date"
-                  value={editedEmployee.birth_date}
-                  onChange={handleModalChange}
-                  className="px-4 py-2 border rounded-md"
-                />
-              </div>
-              <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Position:</label>
-                <input
-                  type="text"
-                  name="position"
-                  value={editedEmployee.position}
-                  onChange={handleModalChange}
-                  className="px-4 py-2 border rounded-md"
-                  placeholder="Enter position"
-                />
-              </div>
-              <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Tech Stack:</label>
-                <input
-                  type="text"
-                  name="tech_stack"
-                  value={editedEmployee.tech_stack}
-                  onChange={handleModalChange}
-                  className="px-4 py-2 border rounded-md"
-                  placeholder="Enter tech stack"
-                />
-              </div>
-              <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Years of Experience:</label>
-                <input
-                  type="number"
-                  name="years_of_experience"
-                  value={editedEmployee.years_of_experience}
-                  onChange={handleModalChange}
-                  className="px-4 py-2 border rounded-md"
-                  placeholder="Enter years of experience"
-                />
-              </div>
-
-              <div className="mt-6 flex justify-between">
+              {/* Add more fields here as needed */}
+              <div className="mt-6 flex justify-end space-x-4">
                 <button
-                  onClick={() => setModalOpen(false)}
-                  className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400"
+                  type="button"
+                  onClick={() => setModalOpen(false)}  // Close modal without saving
+                  className="bg-gray-500 text-white px-4 py-2 rounded"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleSaveChanges}
-                  className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+                  className="bg-blue-500 text-white px-6 py-3 rounded-md"
                 >
-                  Save Changes
+                  {isUpdating ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>

@@ -59,12 +59,20 @@ const Navbar = () => {
                 Add Employee
               </Link>
               {user.user.role === "Super-Admin" && (
+                <>
                 <Link
                   to="/create-hr"
                   className="text-white hover:text-blue-200"
                 >
                   Create New HR
                 </Link>
+                 <Link
+                 to="/all-hr"
+                 className="text-white hover:text-blue-200"
+               >
+                 HR'S
+               </Link>
+               </>
               )}
               <button
                 className="text-white hover:text-blue-200"

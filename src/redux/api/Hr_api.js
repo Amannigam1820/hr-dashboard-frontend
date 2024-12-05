@@ -57,7 +57,14 @@ export const userAPI = createApi({
       query: (empId) => ({
         url: `employee/${empId}`,
         method: "DELETE",
-        
+      }),
+      invalidatesTags: ["employee"],
+    }),
+    updateEmployee: builder.mutation({
+      query: ({ id, empData }) => ({
+        url: `employee/${id}`,
+        method: "PUT",
+        body: empData,
       }),
       invalidatesTags: ["employee"],
     }),
@@ -71,4 +78,5 @@ export const {
   useLogoutMutation,
   useAllEmployeeQuery,
   useAddEmployeeMutation,
+  useUpdateEmployeeMutation
 } = userAPI;
