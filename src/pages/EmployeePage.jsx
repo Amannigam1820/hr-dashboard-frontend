@@ -231,7 +231,7 @@ const EmployeePage = () => {
     {
       columns,
       data,
-      initialState: { pageSize: 6 }, // Set pageSize to 1 to show one row per page
+      initialState: { pageSize: 4 }, // Set pageSize to 1 to show one row per page
     },
     useSortBy,
     usePagination

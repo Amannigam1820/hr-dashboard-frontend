@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import {useAddEmployeeMutation} from "../redux/api/Hr_api.js"
+import { useAddEmployeeMutation } from "../redux/api/Hr_api.js";
 
 const CreateEmployeePage = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +23,7 @@ const CreateEmployeePage = () => {
     releiving_letter: null,
   });
 
+  const [loading, setLoading] = useState(false); // Loading state for tracking submission progress
   const navigate = useNavigate();
   const [addEmployee] = useAddEmployeeMutation();
 
@@ -35,38 +36,12 @@ const CreateEmployeePage = () => {
     }
   };
 
-//   const handleSubmit = async(e) => {
-//     e.preventDefault();
-//     console.log("Form Data Submitted:", formData);
-//     console.log(formData.experience_letter.name);
-    
-//     try {
-//         const res = await addEmployee({
-          
-//         });
-//         //console.log(res);
-  
-//         if ("data" in res) {
-//           console.log(res.data.message);
-  
-//           toast.success(res.data.message);
-//           setFormData({ email: "", password: "", name: "", role: "" });
-//           // dispatch(hrExists(res!.data!.hr))
-//           navigate("/");
-//         } else {
-//           const error = res.error;
-//           const message = error?.data?.message || "An unknown error occurred.";
-//           toast.error(message);
-//         }
-//       } catch (error) {
-//         toast.error("Signin Failed");
-//       }
-//     // Add API submission logic here
-//   };
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
+    // Set loading to true when submission starts
+    setLoading(true);
+
     // Prepare the payload
     const payload = new FormData();
     Object.keys(formData).forEach((key) => {
@@ -74,33 +49,14 @@ const handleSubmit = async (e) => {
         payload.append(key, formData[key]);
       }
     });
-  
+
     try {
       const res = await addEmployee(payload);
       console.log(formData);
-      
-  
+
       if ("data" in res) {
         // Success Response
         toast.success(res.data.message);
-        // setFormData({
-        //   name: "",
-        //   email: "",
-        //   contact_number: "",
-        //   tech_stack: "",
-        //   date_of_joining: "",
-        //   position: "",
-        //   years_of_experience: "",
-        //   cl: "",
-        //   el: "",
-        //   salary: "",
-        //   performance: "",
-        //   birth_date: "",
-        //   address: "",
-        //   resume: null,
-        //   experience_letter: null,
-        //   releiving_letter: null,
-        // });
         navigate("/employees"); // Navigate to another page
       } else {
         // Error Response
@@ -110,9 +66,11 @@ const handleSubmit = async (e) => {
       }
     } catch (error) {
       toast.error("Submission Failed");
+    } finally {
+      // Set loading to false after request is complete
+      setLoading(false);
     }
   };
-  
 
   return (
     <div
@@ -129,44 +87,15 @@ const handleSubmit = async (e) => {
             {[
               { label: "Name", name: "name", type: "text", placeholder: "Enter name" },
               { label: "Email", name: "email", type: "email", placeholder: "Enter email" },
-              {
-                label: "Contact Number",
-                name: "ContactNumber",
-                type: "text",
-                placeholder: "Enter contact number",
-              },
-              {
-                label: "Tech Stack",
-                name: "TechStack",
-                type: "text",
-                placeholder: "Enter tech stack",
-              },
-              {
-                label: "Date of Joining",
-                name: "date_of_joining",
-                type: "date",
-              },
-              {
-                label: "Position",
-                name: "position",
-                type: "text",
-                placeholder: "Enter position",
-              },
-              {
-                label: "Years of Experience",
-                name: "YearsOfExperience",
-                type: "number",
-                placeholder: "Enter experience in years",
-              },
+              { label: "Contact Number", name: "ContactNumber", type: "text", placeholder: "Enter contact number" },
+              { label: "Tech Stack", name: "TechStack", type: "text", placeholder: "Enter tech stack" },
+              { label: "Date of Joining", name: "date_of_joining", type: "date" },
+              { label: "Position", name: "position", type: "text", placeholder: "Enter position" },
+              { label: "Years of Experience", name: "YearsOfExperience", type: "number", placeholder: "Enter experience in years" },
               { label: "Casual Leaves (CL)", name: "CasualLeave", type: "number" },
               { label: "Earned Leaves (EL)", name: "EarnedLeave", type: "number" },
               { label: "Salary", name: "salary", type: "number", placeholder: "Enter salary" },
-              {
-                label: "Performance",
-                name: "performance",
-                type: "text",
-                placeholder: "Enter performance rating",
-              },
+              { label: "Performance", name: "performance", type: "text", placeholder: "Enter performance rating" },
               { label: "Birth Date", name: "birth_date", type: "date" },
               { label: "Address", name: "address", type: "text", placeholder: "Enter address" },
             ].map((field) => (
@@ -218,8 +147,13 @@ const handleSubmit = async (e) => {
             <button
               type="submit"
               className="w-full bg-blue-400 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-purple-600 transition"
+              disabled={loading} // Disable the button while loading
             >
-              Submit
+              {loading ? (
+                <span>Loading...</span>
+              ) : (
+                "Submit"
+              )}
             </button>
           </div>
         </form>
