@@ -16,6 +16,7 @@ import CreateEmployeePage from "./pages/CreateEmployeePage.jsx";
 import EmployeeDetailPage from "./pages/EmployeeDetail.jsx";
 import HrList from "./pages/HrList.jsx";
 import HrDetail from "./pages/HrDetail.jsx";
+import EmployeeDistributionChart from "./pages/EmployeeGenderLocationDeptStats.jsx";
 
 // const user = {
 //   id: 1,
@@ -59,6 +60,7 @@ function App() {
         <Route path="/employee-detail/:id" element={<EmployeeDetailPage/>} />
         <Route path="/all-hr" element={<HrList/>} />
         <Route path="/hr-detail/:id" element={<HrDetail/>}/>
+        <Route path="/dashboard" element={<EmployeeDistributionChart/>}/>
         <Route
           path="/create-hr"
           element={

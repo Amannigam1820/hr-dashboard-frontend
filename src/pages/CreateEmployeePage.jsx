@@ -18,6 +18,8 @@ const CreateEmployeePage = () => {
     performance: "",
     birth_date: "",
     address: "",
+    gender:"",
+    department:"",
     resume: null,
     experience_letter: null,
     releiving_letter: null,
@@ -98,6 +100,8 @@ const CreateEmployeePage = () => {
               { label: "Performance", name: "performance", type: "text", placeholder: "Enter performance rating" },
               { label: "Birth Date", name: "birth_date", type: "date" },
               { label: "Address", name: "address", type: "text", placeholder: "Enter address" },
+              { label: "Gender", name: "gender", type: "text", placeholder: "Enter Gender" },
+              { label: "Department", name: "department", type: "text", placeholder: "Enter Department" },
             ].map((field) => (
               <div className="flex flex-col w-1/4" key={field.name}>
                 <label
