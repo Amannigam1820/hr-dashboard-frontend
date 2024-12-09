@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useUpdateEmployeeMutation } from "../redux/api/Hr_api.js"; // Import the updateEmployee mutation
 
 const EmployeeDetailPage = () => {
@@ -9,27 +9,30 @@ const EmployeeDetailPage = () => {
   const [employee, setEmployee] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);  // Modal visibility state
+  const [modalOpen, setModalOpen] = useState(false); // Modal visibility state
   const [editedEmployee, setEditedEmployee] = useState({}); // State to hold edited employee data
   const navigate = useNavigate();
-  const [updateEmployee, { isLoading: isUpdating }] = useUpdateEmployeeMutation(); // Destructure the mutation
+  const [updateEmployee, { isLoading: isUpdating }] =
+    useUpdateEmployeeMutation(); // Destructure the mutation
 
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8080/api/employee/${id}`, { withCredentials: true })
+      .get(`http://127.0.0.1:8080/api/employee/${id}`, {
+        withCredentials: true,
+      })
       .then((response) => {
         setEmployee(response.data.hr);
-        setEditedEmployee(response.data.hr);  // Pre-fill modal with employee data
+        setEditedEmployee(response.data.hr); // Pre-fill modal with employee data
         setLoading(false);
       })
       .catch((err) => {
-        setError('Error fetching employee details: ' + err.message);
+        setError("Error fetching employee details: " + err.message);
         setLoading(false);
       });
   }, [id]);
 
   const handleEdit = () => {
-    setModalOpen(true);  // Open the modal when Edit button is clicked
+    setModalOpen(true); // Open the modal when Edit button is clicked
   };
 
   const handleDelete = async () => {
@@ -43,7 +46,9 @@ const EmployeeDetailPage = () => {
         withCredentials: true,
       });
 
-      toast.success(`Employee ${employee.name} deleted successfully!`, { duration: 3000 });
+      toast.success(`Employee ${employee.name} deleted successfully!`, {
+        duration: 3000,
+      });
       navigate("/employees");
       window.location.reload();
     } catch (err) {
@@ -54,12 +59,11 @@ const EmployeeDetailPage = () => {
   const handleModalChange = (e) => {
     setEditedEmployee({
       ...editedEmployee,
-      [e.target.name]: e.target.value,  // Dynamically update the corresponding field
+      [e.target.name]: e.target.value, // Dynamically update the corresponding field
     });
   };
 
   console.log(editedEmployee);
-  
 
   const handleSaveChanges = async () => {
     try {
@@ -69,7 +73,7 @@ const EmployeeDetailPage = () => {
         //YearsOfExperience: editedEmployee.YearsOfExperience || editedEmployee.years_of_experience, // Handle both cases
         YearsOfExperience: parseFloat(editedEmployee.YearsOfExperience),
         CasualLeave: parseInt(editedEmployee.CasualLeave, 10),
-        EarnedLeave:parseInt(editedEmployee.EarnedLeave,10)
+        EarnedLeave: parseInt(editedEmployee.EarnedLeave, 10),
       };
 
       console.log(transformedData);
@@ -77,15 +81,15 @@ const EmployeeDetailPage = () => {
       // delete transformedData.years_of_experience;
 
       // console.log('Transformed Data:', transformedData);
-      
+
       //delete transformedData.years_of_experience;
-      const res = await updateEmployee({ id, empData: transformedData })
+      const res = await updateEmployee({ id, empData: transformedData });
       console.log(res);
-      toast.success('Employee details updated successfully!');
+      toast.success("Employee details updated successfully!");
       setModalOpen(false); // Close the modal after successful update
       setEmployee(editedEmployee); // Update the displayed employee data
     } catch (err) {
-      toast.error('Error updating employee details: ' + err.message);
+      toast.error("Error updating employee details: " + err.message);
     }
   };
 
@@ -98,14 +102,15 @@ const EmployeeDetailPage = () => {
   }
 
   console.log(employee);
-  
 
   return (
     <div className="container mx-auto p-6">
       <div className="bg-white p-8 rounded-lg shadow-md flex gap-8">
         {/* Left Section: Employee Details */}
         <div className="flex-1">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-6">Employee Details</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+            Employee Details
+          </h2>
           {employee ? (
             <div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -130,15 +135,22 @@ const EmployeeDetailPage = () => {
                   <span className="text-gray-500">{employee.department}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-gray-600">Contact Number:</span>
-                  <span className="text-gray-500">{employee.contact_number}</span>
+                  <span className="font-bold text-gray-600">
+                    Contact Number:
+                  </span>
+                  <span className="text-gray-500">
+                    {employee.contact_number}
+                  </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-gray-600">Date of Birth:</span>
-                  {
-                    employee.birth_date === null ? <span className="text-gray-300">NA</span> :<span className="text-gray-500">{employee.birth_date}</span>
-                  }
-                  
+                  <span className="font-bold text-gray-600">
+                    Date of Birth:
+                  </span>
+                  {employee.birth_date === null ? (
+                    <span className="text-gray-300">NA</span>
+                  ) : (
+                    <span className="text-gray-500">{employee.birth_date}</span>
+                  )}
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Position:</span>
@@ -149,8 +161,12 @@ const EmployeeDetailPage = () => {
                   <span className="text-gray-500">{employee.tech_stack}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-gray-600">Years of Experience:</span>
-                  <span className="text-gray-500">{employee.YearsOfExperience}</span>
+                  <span className="font-bold text-gray-600">
+                    Years of Experience:
+                  </span>
+                  <span className="text-gray-500">
+                    {employee.YearsOfExperience}
+                  </span>
                 </div>
               </div>
 
@@ -164,18 +180,21 @@ const EmployeeDetailPage = () => {
                   <span className="text-gray-500">{employee.EarnedLeave}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-gray-600">Date of Joining:</span>
-                  {
-                    employee.
-                    date_of_joining
-                     === null ? <span className="text-gray-300">NA</span> :<span className="text-gray-500">{employee.
-                      date_of_joining
-                      }</span>
-                  }
-                  
+                  <span className="font-bold text-gray-600">
+                    Date of Joining:
+                  </span>
+                  {employee.date_of_joining === null ? (
+                    <span className="text-gray-300">NA</span>
+                  ) : (
+                    <span className="text-gray-500">
+                      {employee.date_of_joining}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col mb-4">
-                  <span className="font-bold text-gray-600">Creation Date:</span>
+                  <span className="font-bold text-gray-600">
+                    Creation Date:
+                  </span>
                   <span className="text-gray-500">{employee.created_at}</span>
                 </div>
               </div>
@@ -233,7 +252,9 @@ const EmployeeDetailPage = () => {
       {modalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-96 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6">Edit Employee</h2>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+              Edit Employee
+            </h2>
             <form>
               {/* All fields attached here */}
               <div className="flex flex-col mb-4">
@@ -292,7 +313,9 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Contact Number :</label>
+                <label className="font-bold text-gray-600">
+                  Contact Number :
+                </label>
                 <input
                   type="number"
                   name="contact_number"
@@ -336,7 +359,9 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Casual Leave :</label>
+                <label className="font-bold text-gray-600">
+                  Casual Leave :
+                </label>
                 <input
                   type="text"
                   name="CasualLeave"
@@ -347,7 +372,9 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Earned Leave :</label>
+                <label className="font-bold text-gray-600">
+                  Earned Leave :
+                </label>
                 <input
                   type="text"
                   name="EarnedLeave"
@@ -361,7 +388,7 @@ const EmployeeDetailPage = () => {
               <div className="mt-6 flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={() => setModalOpen(false)}  // Close modal without saving
+                  onClick={() => setModalOpen(false)} // Close modal without saving
                   className="bg-gray-500 text-white px-4 py-2 rounded"
                 >
                   Cancel
@@ -371,7 +398,7 @@ const EmployeeDetailPage = () => {
                   onClick={handleSaveChanges}
                   className="bg-blue-500 text-white px-6 py-3 rounded-md"
                 >
-                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                  {isUpdating ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>
