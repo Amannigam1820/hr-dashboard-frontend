@@ -40,7 +40,7 @@ const CreateHrPage = () => {
         toast.success(res.data.message);
         setFormData({ email: "", password: "", name: "", role: "" });
         // dispatch(hrExists(res!.data!.hr))
-        navigate("/");
+        navigate("/all-hr");
       } else {
         const error = res.error;
         const message = error?.data?.message || "An unknown error occurred.";

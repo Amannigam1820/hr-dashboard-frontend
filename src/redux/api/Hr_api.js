@@ -68,6 +68,14 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["employee"],
     }),
+    updateHr: builder.mutation({
+      query: ({ id, hrData }) => ({
+        url: `hr/${id}`,
+        method: "PUT",
+        body: hrData,
+      }),
+      invalidatesTags: ["hr"],
+    }),
   }),
 });
 
@@ -78,5 +86,6 @@ export const {
   useLogoutMutation,
   useAllEmployeeQuery,
   useAddEmployeeMutation,
-  useUpdateEmployeeMutation
+  useUpdateEmployeeMutation,
+  useUpdateHrMutation
 } = userAPI;

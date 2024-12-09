@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import EmployeeList from "./pages/EmployeePage.jsx";
 import CreateEmployeePage from "./pages/CreateEmployeePage.jsx";
 import EmployeeDetailPage from "./pages/EmployeeDetail.jsx";
+import HrList from "./pages/HrList.jsx";
+import HrDetail from "./pages/HrDetail.jsx";
 
 // const user = {
 //   id: 1,
@@ -55,6 +57,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/create-employee" element={<CreateEmployeePage />} />
         <Route path="/employee-detail/:id" element={<EmployeeDetailPage/>} />
+        <Route path="/all-hr" element={<HrList/>} />
+        <Route path="/hr-detail/:id" element={<HrDetail/>}/>
         <Route
           path="/create-hr"
           element={
