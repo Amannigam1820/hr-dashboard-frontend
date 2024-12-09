@@ -92,7 +92,7 @@ const EmployeeDistributionChart = () => {
           display: false, // Remove y-axis grid lines
         },
         ticks: {
-          stepSize: 1, // Display whole numbers on the y-axis
+          stepSize: 2, // Display whole numbers on the y-axis
         },
       },
     },
