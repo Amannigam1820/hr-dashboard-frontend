@@ -97,6 +97,9 @@ const EmployeeDetailPage = () => {
     return <div className="text-red-500">{error}</div>;
   }
 
+  console.log(employee);
+  
+
   return (
     <div className="container mx-auto p-6">
       <div className="bg-white p-8 rounded-lg shadow-md flex gap-8">
@@ -115,8 +118,16 @@ const EmployeeDetailPage = () => {
                   <span className="text-gray-500">{employee.email}</span>
                 </div>
                 <div className="flex flex-col">
+                  <span className="font-bold text-gray-600">Gender:</span>
+                  <span className="text-gray-500">{employee.gender}</span>
+                </div>
+                <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Address:</span>
                   <span className="text-gray-500">{employee.address}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-gray-600">Department:</span>
+                  <span className="text-gray-500">{employee.department}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Contact Number:</span>
@@ -124,7 +135,10 @@ const EmployeeDetailPage = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Date of Birth:</span>
-                  <span className="text-gray-500">{employee.birth_date}</span>
+                  {
+                    employee.birth_date === null ? <span className="text-gray-300">NA</span> :<span className="text-gray-500">{employee.birth_date}</span>
+                  }
+                  
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Position:</span>
@@ -149,9 +163,16 @@ const EmployeeDetailPage = () => {
                   <span className="font-bold text-gray-600">Earned Leave:</span>
                   <span className="text-gray-500">{employee.EarnedLeave}</span>
                 </div>
-                <div className="flex flex-col mb-4">
+                <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Date of Joining:</span>
-                  <span className="text-gray-500">{employee.date_of_joining}</span>
+                  {
+                    employee.
+                    date_of_joining
+                     === null ? <span className="text-gray-300">NA</span> :<span className="text-gray-500">{employee.
+                      date_of_joining
+                      }</span>
+                  }
+                  
                 </div>
                 <div className="flex flex-col mb-4">
                   <span className="font-bold text-gray-600">Creation Date:</span>
@@ -216,7 +237,7 @@ const EmployeeDetailPage = () => {
             <form>
               {/* All fields attached here */}
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Name:</label>
+                <label className="font-bold text-gray-600">Name :</label>
                 <input
                   type="text"
                   name="name"
@@ -227,7 +248,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Email:</label>
+                <label className="font-bold text-gray-600">Email :</label>
                 <input
                   type="email"
                   name="email"
@@ -238,7 +259,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Address:</label>
+                <label className="font-bold text-gray-600">Address :</label>
                 <input
                   type="text"
                   name="address"
@@ -249,7 +270,29 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Contact Number:</label>
+                <label className="font-bold text-gray-600">Gender :</label>
+                <input
+                  type="text"
+                  name="gender"
+                  value={editedEmployee.gender}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's address"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Department :</label>
+                <input
+                  type="text"
+                  name="department"
+                  value={editedEmployee.department}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's address"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Contact Number :</label>
                 <input
                   type="number"
                   name="contact_number"
@@ -260,7 +303,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Position:</label>
+                <label className="font-bold text-gray-600">Position :</label>
                 <input
                   type="text"
                   name="position"
@@ -271,7 +314,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Tech Stack:</label>
+                <label className="font-bold text-gray-600">Tech Stack :</label>
                 <input
                   type="text"
                   name="tech_stack"
@@ -282,7 +325,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Year Of Exp.:</label>
+                <label className="font-bold text-gray-600">Year Of Exp :</label>
                 <input
                   type="text"
                   name="YearsOfExperience"
@@ -293,7 +336,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Casual Leave:</label>
+                <label className="font-bold text-gray-600">Casual Leave :</label>
                 <input
                   type="text"
                   name="CasualLeave"
@@ -304,7 +347,7 @@ const EmployeeDetailPage = () => {
                 />
               </div>
               <div className="flex flex-col mb-4">
-                <label className="font-bold text-gray-600">Earned Leave:</label>
+                <label className="font-bold text-gray-600">Earned Leave :</label>
                 <input
                   type="text"
                   name="EarnedLeave"

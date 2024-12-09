@@ -24,6 +24,10 @@ const columns = [
     accessor: "contact_number",
   },
   {
+    Header: "Gender",
+    accessor: "gender",
+  },
+  {
     Header: "Birth Date",
     accessor: "birth_date",
   },
@@ -130,6 +134,10 @@ const columns = [
     accessor: "tech_stack",
   },
   {
+    Header: "Department",
+    accessor: "department",
+  },
+  {
     Header: "Year Of Experience",
     accessor: "YearsOfExperience",
   },
@@ -231,7 +239,7 @@ const EmployeePage = () => {
     {
       columns,
       data,
-      initialState: { pageSize: 4 }, // Set pageSize to 1 to show one row per page
+      initialState: { pageSize: 5 }, // Set pageSize to 1 to show one row per page
     },
     useSortBy,
     usePagination

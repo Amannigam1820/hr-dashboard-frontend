@@ -10,16 +10,31 @@ const EmployeeDistributionChart = () => {
 
   useEffect(() => {
     // Fetching data from the API (adjust URL to your backend API)
-    fetch('http://127.0.0.1:8080/api/employee/stats')
-      .then(response => response.json())
-      .then(data => setData(data));
+    fetch('http://127.0.0.1:8080/api/employee/stats', {
+      method: 'GET',
+      credentials: 'include', // Include cookies or other credentials
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => setData(data))
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
+
+  console.log(data?.data);
+  
 
   // Check if data is not null and contains the required properties
   if (
     !data?.data ||
     !data?.data?.genderDistribution ||
     !data?.data?.departmentDistribution ||
+    !data?.data?.
+    positionDistribution
+     ||
     !data?.data?.locationDistribution
   ) {
     return <div className="flex justify-center items-center h-screen text-gray-600">Loading...</div>;
@@ -56,6 +71,26 @@ const EmployeeDistributionChart = () => {
       },
     ],
   };
+
+  const positionData = {
+    labels: Object.keys(data.data.
+        positionDistribution
+        ),
+    datasets:[
+        {
+            label:"Position Distribution",
+            data:Object.values(data.data.positionDistribution),
+            backgroundColor:  [
+                '#FF5733', // Red
+                '#33FF57', // Green
+                '#3357FF', // Blue
+                '#FFC300', // Yellow
+                '#C70039', // Crimson
+              ], // Orange
+            barThickness: 50,
+        }
+    ]
+  }
 
   // Data for the Location Distribution Bar Chart
   const locationData = {
@@ -115,6 +150,13 @@ const EmployeeDistributionChart = () => {
           <h4 className="text-md font-semibold text-gray-700 mb-2 text-center">Department Distribution</h4>
           <div className="h-64 w-full">
             <Bar data={departmentData} options={chartOptions} />
+          </div>
+        </div>
+
+        <div className="bg-white shadow-lg rounded-lg p-4">
+          <h4 className="text-md font-semibold text-gray-700 mb-2 text-center">Department Distribution</h4>
+          <div className="h-64 w-full">
+            <Bar data={positionData} options={chartOptions} />
           </div>
         </div>
 
