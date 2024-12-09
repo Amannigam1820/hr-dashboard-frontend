@@ -29,11 +29,11 @@ const columns = [
   },
   {
     Header: "Casual Leave",
-    accessor: "cl",
+    accessor: "CasualLeave",
   },
   {
     Header: "Earned Leave",
-    accessor: "el",
+    accessor: "EarnedLeave",
   },
   {
     Header: "Creation On",
@@ -131,7 +131,7 @@ const columns = [
   },
   {
     Header: "Year Of Experience",
-    accessor: "years_of_experience",
+    accessor: "YearsOfExperience",
   },
   {
     Header: "Updated ON",

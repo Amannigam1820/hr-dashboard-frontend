@@ -64,7 +64,22 @@ const EmployeeDetailPage = () => {
   const handleSaveChanges = async () => {
     try {
       // Call the updateEmployee mutation
-      const res = await updateEmployee({ id, empData: editedEmployee })
+      const transformedData = {
+        ...editedEmployee, // Spread the existing data
+        //YearsOfExperience: editedEmployee.YearsOfExperience || editedEmployee.years_of_experience, // Handle both cases
+        YearsOfExperience: parseFloat(editedEmployee.YearsOfExperience),
+        CasualLeave: parseInt(editedEmployee.CasualLeave, 10),
+        EarnedLeave:parseInt(editedEmployee.EarnedLeave,10)
+      };
+
+      console.log(transformedData);
+
+      // delete transformedData.years_of_experience;
+
+      // console.log('Transformed Data:', transformedData);
+      
+      //delete transformedData.years_of_experience;
+      const res = await updateEmployee({ id, empData: transformedData })
       console.log(res);
       toast.success('Employee details updated successfully!');
       setModalOpen(false); // Close the modal after successful update
@@ -121,18 +136,18 @@ const EmployeeDetailPage = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-gray-600">Years of Experience:</span>
-                  <span className="text-gray-500">{employee.years_of_experience}</span>
+                  <span className="text-gray-500">{employee.YearsOfExperience}</span>
                 </div>
               </div>
 
               <div className="mt-6">
                 <div className="flex flex-col mb-4">
                   <span className="font-bold text-gray-600">Casual Leave:</span>
-                  <span className="text-gray-500">{employee.cl}</span>
+                  <span className="text-gray-500">{employee.CasualLeave}</span>
                 </div>
                 <div className="flex flex-col mb-4">
                   <span className="font-bold text-gray-600">Earned Leave:</span>
-                  <span className="text-gray-500">{employee.el}</span>
+                  <span className="text-gray-500">{employee.EarnedLeave}</span>
                 </div>
                 <div className="flex flex-col mb-4">
                   <span className="font-bold text-gray-600">Date of Joining:</span>
@@ -231,6 +246,72 @@ const EmployeeDetailPage = () => {
                   onChange={handleModalChange}
                   className="px-4 py-2 border rounded-md"
                   placeholder="Enter employee's address"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Contact Number:</label>
+                <input
+                  type="number"
+                  name="contact_number"
+                  value={editedEmployee.contact_number}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Position:</label>
+                <input
+                  type="text"
+                  name="position"
+                  value={editedEmployee.position}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Tech Stack:</label>
+                <input
+                  type="text"
+                  name="tech_stack"
+                  value={editedEmployee.tech_stack}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Year Of Exp.:</label>
+                <input
+                  type="text"
+                  name="YearsOfExperience"
+                  value={editedEmployee.YearsOfExperience}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Casual Leave:</label>
+                <input
+                  type="text"
+                  name="CasualLeave"
+                  value={editedEmployee.CasualLeave}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Earned Leave:</label>
+                <input
+                  type="text"
+                  name="EarnedLeave"
+                  value={editedEmployee.EarnedLeave}
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
+                  placeholder="Enter employee's Contact"
                 />
               </div>
               {/* Add more fields here as needed */}
