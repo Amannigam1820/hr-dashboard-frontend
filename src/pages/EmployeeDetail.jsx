@@ -7,6 +7,7 @@ import { useUpdateEmployeeMutation } from "../redux/api/Hr_api.js"; // Import th
 const EmployeeDetailPage = () => {
   const { id } = useParams();
   const [employee, setEmployee] = useState({});
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false); // Modal visibility state
@@ -63,14 +64,14 @@ const EmployeeDetailPage = () => {
     });
   };
 
-  console.log(editedEmployee);
+  //console.log(editedEmployee);
 
   const handleSaveChanges = async () => {
     try {
       // Call the updateEmployee mutation
       const transformedData = {
-        ...editedEmployee, // Spread the existing data
-        //YearsOfExperience: editedEmployee.YearsOfExperience || editedEmployee.years_of_experience, // Handle both cases
+        ...editedEmployee,
+
         YearsOfExperience: parseFloat(editedEmployee.YearsOfExperience),
         CasualLeave: parseInt(editedEmployee.CasualLeave, 10),
         EarnedLeave: parseInt(editedEmployee.EarnedLeave, 10),
@@ -100,8 +101,6 @@ const EmployeeDetailPage = () => {
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
-
-  console.log(employee);
 
   return (
     <div className="container mx-auto p-6">
@@ -206,7 +205,7 @@ const EmployeeDetailPage = () => {
                   rel="noopener noreferrer"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  View Experience Letter
+                  Download Experience Letter
                 </a>
                 <a
                   href={employee.releiving_letter}
@@ -214,7 +213,7 @@ const EmployeeDetailPage = () => {
                   rel="noopener noreferrer"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  View Relieving Letter
+                  Download Relieving Letter
                 </a>
                 <a
                   href={employee.resume}
@@ -222,7 +221,7 @@ const EmployeeDetailPage = () => {
                   rel="noopener noreferrer"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  View Resume
+                  Download Resume
                 </a>
               </div>
             </div>

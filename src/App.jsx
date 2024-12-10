@@ -35,7 +35,7 @@ function App() {
   // Handle the fetched data
   useEffect(() => {
     if (isLoading) {
-      console.log("Fetching user data...");
+      //console.log("Fetching user data...");
     }
 
     if (error) {
@@ -43,7 +43,7 @@ function App() {
     }
 
     if (data) {
-      console.log("User Data:", data);
+     // console.log("User Data:", data);
       dispatch(userExists(data));
 
       // Dispatch or use the data as needed
