@@ -52,11 +52,12 @@ const columns = [
     accessor: "experience_letter",
     Cell: ({ value }) => (
       <a href={value} target="_blank" rel="noopener noreferrer">
-        <img
+        <h1 className="hover:scale-110 transition-transform duration-300 ease-in-out">Experience_letter.pdf</h1>
+        {/* <img
           src={value}
           alt="Resume"
           className="h-12 w-12 object-cover rounded-md cursor-pointer"
-        />
+        /> */}
       </a>
     ),
   },
@@ -65,24 +66,26 @@ const columns = [
     accessor: "releiving_letter",
     Cell: ({ value }) => (
       <a href={value} target="_blank" rel="noopener noreferrer">
-        <img
+        <h1 className="hover:scale-110 transition-transform duration-300 ease-in-out">releiving_letter.pdf</h1>
+        {/* <img
           src={value}
           alt="Resume"
           className="h-12 w-12 object-cover rounded-md cursor-pointer"
-        />
+        /> */}
       </a>
     ),
   },
   {
-    Header: "Reume",
+    Header: "Resume",
     accessor: "resume",
     Cell: ({ value }) => (
       <a href={value} target="_blank" rel="noopener noreferrer">
-        <img
+        <h1 className="hover:scale-110 transition-transform duration-300 ease-in-out">Resume.pdf</h1>
+        {/* <img
           src={value}
           alt="Resume"
           className="h-12 w-12 object-cover rounded-md cursor-pointer"
-        />
+        /> */}
       </a>
     ),
   },
