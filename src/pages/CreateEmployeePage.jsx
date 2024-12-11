@@ -74,6 +74,9 @@ const CreateEmployeePage = () => {
     }
   };
 
+  console.log(formData);
+  
+
   return (
     <div
       className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 overflow-hidden"
@@ -94,8 +97,8 @@ const CreateEmployeePage = () => {
               { label: "Date of Joining", name: "date_of_joining", type: "date" },
               { label: "Position", name: "position", type: "text", placeholder: "Enter position" },
               { label: "Years of Experience", name: "YearsOfExperience", type: "number", placeholder: "Enter experience in years" },
-              { label: "Casual Leaves (CL)", name: "CasualLeave", type: "number" },
-              { label: "Earned Leaves (EL)", name: "EarnedLeave", type: "number" },
+              { label: "Casual Leaves (CL)", name: "CasualLeave", type: "number", placeholder:"Enter Casual Leave" },
+              { label: "Earned Leaves (EL)", name: "EarnedLeave", type: "number", placeholder:"Enter Earned Leave" },
               { label: "Salary", name: "salary", type: "number", placeholder: "Enter salary" },
               { label: "Performance", name: "performance", type: "text", placeholder: "Enter performance rating" },
               { label: "Birth Date", name: "birth_date", type: "date" },

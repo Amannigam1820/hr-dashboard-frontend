@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useUpdateEmployeeMutation } from "../redux/api/Hr_api.js"; // Import the updateEmployee mutation
 
@@ -101,6 +101,9 @@ const EmployeeDetailPage = () => {
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
+
+  console.log(employee);
+  
 
   return (
     <div className="container mx-auto p-6">
@@ -215,14 +218,20 @@ const EmployeeDetailPage = () => {
                 >
                   Download Relieving Letter
                 </a>
-                <a
-                  href={employee.resume}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to={`/resume/${employee.id}`} // Updated to redirect to the /resume page
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
                   Download Resume
-                </a>
+                </Link>
+                {/* <Link
+                  // href={employee.resume}
+                  // target="_blank"
+                  // rel="noopener noreferrer"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  Download Resume
+                </Link> */}
               </div>
             </div>
           ) : (
