@@ -1,400 +1,197 @@
-import React, { useEffect, useState } from "react";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; // For getting employee ID from URL params
+import { Editor } from "@tinymce/tinymce-react"; // TinyMCE editor
+import mammoth from "mammoth"; // Import mammoth for Word-to-HTML conversion
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { PDFDocument } from "pdf-lib";
 
 const ViewResume = () => {
-  const { id } = useParams();
-  const [resumeURL, setResumeURL] = useState("");
-  const [editableContent, setEditableContent] = useState({
-    skills: "",
-    experience: "",
-  });
+  const { id } = useParams(); // Get employee ID from route params
+  const [resumeContent, setResumeContent] = useState(""); // Content for editing
+  const [resumeURL, setResumeURL] = useState(""); // URL of the resume
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState();
 
-  // Fetch resume URL
-  useEffect(() => {
-    const fetchResumeURL = async () => {
+  // Fetch the resume URL using the provided API
+  const fetchResumeURL = async () => {
+    try {
       const response = await fetch(`http://127.0.0.1:8080/api/employee/${id}`, {
         method: "GET",
         credentials: "include",
       });
       const data = await response.json();
       setResumeURL(data.hr.resume);
+      setName(data.hr.name);
+    } catch (error) {
+      console.error("Error fetching resume URL:", error);
+    }
+  };
 
-      // Load the PDF and extract text (simplified)
-      const pdfBytes = await fetch(data.hr.resume).then((res) =>
-        res.arrayBuffer()
-      );
-      await loadPDF(pdfBytes);
+  // Handle file upload and convert Word to HTML using Mammoth
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const arrayBuffer = e.target.result;
+        mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+          .then((result) => {
+            setResumeContent(result.value); // Set the Word file content to the editor
+          })
+          .catch((error) => {
+            console.error("Error converting Word document:", error);
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  // Fetch resume content if the URL is available
+  const fetchResumeContent = async () => {
+    try {
+      const response = await fetch(resumeURL);
+      const arrayBuffer = await response.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pages = pdfDoc.getPages();
+
+      let text = "";
+      for (const page of pages) {
+        const pageContent = await page.getTextContent();
+        text += pageContent.items.map((item) => item.str).join(" ") + "\n\n";
+      }
+
+      setResumeContent(text);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching or parsing PDF:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch resume URL first, then fetch its content
+    const fetchData = async () => {
+      await fetchResumeURL();
     };
-
-    fetchResumeURL();
+    fetchData();
   }, [id]);
 
-  // Load the PDF and set placeholders for editable sections
-  const loadPDF = async (pdfBytes) => {
-    const pdfDoc = await PDFDocument.load(pdfBytes);
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0]; // Assuming text is on the first page
+  useEffect(() => {
+    if (resumeURL) {
+      fetchResumeContent();
+    }
+  }, [resumeURL]);
 
-    // Simulate predefined editable sections
-    setEditableContent({
-      skills: "React, Node.js, SQL", // Replace with parsed content if required
-      experience: "2 years in full-stack development",
-    });
-  };
+  // Generate updated PDF from the content of the TinyMCE editor
+  const generateUpdatedPdf = async () => {
+    try {
+      // Get the content of the editor (TinyMCE editor inside an iframe)
+      const editorContent = document.querySelector(".tox-edit-area iframe").contentDocument.body;
 
-  // Handle content updates
-  const handleContentChange = (e) => {
-    const { name, value } = e.target;
-    setEditableContent((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+      // Temporarily remove red underlines caused by spellcheck
+      const redUnderlines = editorContent.querySelectorAll("span[style*='color: red;'][style*='text-decoration: underline;']");
+      redUnderlines.forEach((span) => {
+        // Remove the red underline by clearing the styles
+        span.style.textDecoration = "none";  // Remove underline
+        span.style.color = "black";  // Change color to black or any neutral color
+      });
 
-  // Update PDF with edited content (clear and redraw the section)
-  const updatePDF = async () => {
-    const pdfBytes = await fetch(resumeURL).then((res) => res.arrayBuffer());
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+      // Capture the editor content as a high-resolution image
+      const canvas = await html2canvas(editorContent, { scale: 2 });
+      const imageData = canvas.toDataURL("image/png");
 
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
+      // Calculate the desired dimensions for the PDF page (A4 size in points)
+      const pdfWidth = 530;  // A4 width in points (in px: 210mm * 72 DPI)
+      const leftMargin = 25;  // Left margin
+      const rightMargin = 25;  // Right margin
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const { skills, experience } = editableContent;
+      // Calculate the dynamic PDF height based on content
+      const contentHeight = canvas.height * (pdfWidth / canvas.width);  // Scale height to maintain aspect ratio
+      const pdfHeight = contentHeight < 500 ? 500 : contentHeight; // Ensure the minimum height of A4 page (650px)
 
-    // Clear and redraw Skills
-    firstPage.drawRectangle({
-      x: 50,
-      y: 690,
-      width: 500,
-      height: 20,
-      color: rgb(1, 1, 1), // Clear the previous text by drawing a black rectangle
-    });
-    firstPage.drawText(`Skills: ${skills}`, {
-      x: 50,
-      y: 700,
-      size: 12,
-      font,
-      color: rgb(0, 0, 0), // Write new text
-    });
+      // Create a PDF document using jsPDF with dynamically adjusted height
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [pdfWidth, pdfHeight], // Use dynamic height
+      });
 
-    // Clear and redraw Experience
-    firstPage.drawRectangle({
-      x: 50,
-      y: 670,
-      width: 500,
-      height: 20,
-      color: rgb(1, 1, 1), // Clear the previous text by drawing a black rectangle
-    });
-    firstPage.drawText(`Experience: ${experience}`, {
-      x: 50,
-      y: 680,
-      size: 12,
-      font,
-      color: rgb(0, 0, 0), // Write new text
-    });
+      // Adjust the width for margins
+      const scaledWidth = pdfWidth - leftMargin - rightMargin;  // Adjusted width after margins
+      const scale = scaledWidth / canvas.width;  // Scale to fit the adjusted width
+      const scaledHeight = canvas.height * scale;  // Calculate height based on the scale
 
-    const updatedPdfBytes = await pdfDoc.save();
-    const blob = new Blob([updatedPdfBytes], { type: "application/pdf" });
-    const updatedPdfURL = URL.createObjectURL(blob);
+      // Add the image to the PDF, with margins taken into account
+      pdf.addImage(imageData, "PNG", leftMargin, 0, scaledWidth, scaledHeight);
 
-    setResumeURL(updatedPdfURL); // Update iframe to show edited PDF
+      // Save the PDF
+      pdf.save(`${name}_resume.pdf`);
+
+      // Optionally, you can restore the original red underlines if needed
+      redUnderlines.forEach((span) => {
+        span.style.textDecoration = "underline";  // Restore underline
+        span.style.color = "red";  // Restore red color
+      });
+
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-  {/* Editable fields */}
-  <div style={{ marginBottom: "20px" }}>
-    <label
-      htmlFor="skills"
-      style={{ display: "block", fontWeight: "bold", marginBottom: "5px" }}
-    >
-      Skills:
-    </label>
-    <textarea
-      name="skills"
-      value={editableContent.skills}
-      onChange={handleContentChange}
-      rows={2}
-      style={{
-        width: "100%",
-        padding: "10px",
-        fontSize: "14px",
-        borderRadius: "5px",
-        border: "1px solid #ccc",
-        boxSizing: "border-box",
-        marginBottom: "15px",
-        resize: "vertical",
-      }}
-    />
-    <label
-      htmlFor="experience"
-      style={{ display: "block", fontWeight: "bold", marginBottom: "5px" }}
-    >
-      Experience:
-    </label>
-    <textarea
-      name="experience"
-      value={editableContent.experience}
-      onChange={handleContentChange}
-      rows={2}
-      style={{
-        width: "100%",
-        padding: "10px",
-        fontSize: "14px",
-        borderRadius: "5px",
-        border: "1px solid #ccc",
-        boxSizing: "border-box",
-        marginBottom: "20px",
-        resize: "vertical",
-      }}
-    />
-  </div>
+    <div className="p-8 bg-gray-100 min-h-screen">
+      {loading ? (
+        <p className="text-center text-xl text-gray-700">Loading resume...</p>
+      ) : (
+        <>
+          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Edit Resume</h2>
+          
+          <div className="flex justify-center mb-6">
+            <input
+              type="file"
+              onChange={handleFileChange}
+              className="p-3 border rounded-lg bg-white shadow-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-  {/* Button to update PDF */}
-  <button
-    onClick={updatePDF}
-    style={{
-      backgroundColor: "#4CAF50",
-      color: "white",
-      border: "none",
-      padding: "10px 20px",
-      fontSize: "16px",
-      cursor: "pointer",
-      borderRadius: "5px",
-      transition: "background-color 0.3s ease",
-    }}
-    onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
-    onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-  >
-    Update Resume
-  </button>
+          <Editor
+            apiKey="n7igyli7typhj3datc05fv28dnj859hzav54ewi6plp2iih6"
+            value={resumeContent}
+            onEditorChange={(content) => setResumeContent(content)}
+            init={{
+              plugins: [
+                "anchor", "autolink", "charmap", "codesample", "emoticons", "image", "link", "lists", "media", "searchreplace", "table", "visualblocks", "wordcount",
+                "checklist", "mediaembed", "casechange", "export", "formatpainter", "pageembed", "a11ychecker", "permanentpen", "powerpaste", "advtable", "advcode", "editimage", "advtemplate", "ai", "mentions", "tinycomments", "tableofcontents", "footnotes", "mergetags", "autocorrect", "typography", "inlinecss", "markdown", "importword", "exportword", "exportpdf","importpdf", 'autoresize', "save"
+              ],
+              toolbar:
+                "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat" | "save",
+              paste_word_valid_elements: "strong,em,u,a,ul,ol,li,p,h1,h2,h3,h4,h5,h6,table,tr,th,td,br",
+              paste_word_import_styles: true, // Import styles from Word
+              tinycomments_mode: "embedded",
+              tinycomments_author: "Author name",
+              mergetags_list: [
+                { value: "First.Name", title: "First Name" },
+                { value: "Email", title: "Email" },
+              ],
+              ai_request: (request, respondWith) =>
+                respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+            }}
+            className="bg-white rounded-lg shadow-lg p-4"
+          />
 
-  {/* Display the PDF */}
-  <div
-    style={{
-      marginTop: "20px",
-      border: "1px solid #ddd",
-      borderRadius: "5px",
-      padding: "10px",
-    }}
-  >
-    <iframe
-      src={resumeURL}
-      width="100%"
-      height="600px"
-      title="Resume"
-      style={{ border: "none", borderRadius: "5px" }}
-    />
-  </div>
-</div>
-
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={generateUpdatedPdf}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
+            >
+              Save and Generate PDF
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
 export default ViewResume;
-
-
-// import React, { useEffect, useState } from "react";
-// import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-// import { useParams } from "react-router-dom";
-
-// const ViewResume = () => {
-//   const { id } = useParams();
-//   const [resumeURL, setResumeURL] = useState("");
-//   const [editableContent, setEditableContent] = useState({
-//     skills: "",
-//     experience: "",
-//   });
-
-//   // Fetch resume URL
-//   useEffect(() => {
-//     const fetchResumeURL = async () => {
-//       const response = await fetch(`http://127.0.0.1:8080/api/employee/${id}`, {
-//         method: "GET",
-//         credentials: "include",
-//       });
-//       const data = await response.json();
-//       setResumeURL(data.hr.resume);
-
-//       // Load the PDF and extract text (simplified)
-//       const pdfBytes = await fetch(data.hr.resume).then((res) =>
-//         res.arrayBuffer()
-//       );
-//       await loadPDF(pdfBytes);
-//     };
-
-//     fetchResumeURL();
-//   }, [id]);
-
-//   // Load the PDF and set placeholders for editable sections
-//   const loadPDF = async (pdfBytes) => {
-//     const pdfDoc = await PDFDocument.load(pdfBytes);
-//     const pages = pdfDoc.getPages();
-//     const firstPage = pages[0]; // Assuming text is on the first page
-
-//     // Simulate predefined editable sections
-//     setEditableContent({
-//       skills: "React, Node.js, SQL", // Replace with parsed content if required
-//       experience: "2 years in full-stack development",
-//     });
-//   };
-
-//   // Handle content updates
-//   const handleContentChange = (e) => {
-//     const { name, value } = e.target;
-//     setEditableContent((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   // Update PDF with edited content (clear and redraw the section)
-//   const updatePDF = async () => {
-//     const pdfBytes = await fetch(resumeURL).then((res) => res.arrayBuffer());
-//     const pdfDoc = await PDFDocument.load(pdfBytes);
-
-//     const pages = pdfDoc.getPages();
-//     const firstPage = pages[0];
-
-//     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-//     const { skills, experience } = editableContent;
-
-//     // Clear and redraw Skills
-//     firstPage.drawRectangle({
-//       x: 50,
-//       y: 690,
-//       width: 500,
-//       height: 20,
-//       color: rgb(1, 1, 1), // Clear the previous text by drawing a black rectangle
-//     });
-//     firstPage.drawText(`Skills: ${skills}`, {
-//       x: 50,
-//       y: 700,
-//       size: 12,
-//       font,
-//       color: rgb(0, 0, 0), // Write new text
-//     });
-
-//     // Clear and redraw Experience
-//     firstPage.drawRectangle({
-//       x: 50,
-//       y: 670,
-//       width: 500,
-//       height: 20,
-//       color: rgb(1, 1, 1), // Clear the previous text by drawing a black rectangle
-//     });
-//     firstPage.drawText(`Experience: ${experience}`, {
-//       x: 50,
-//       y: 680,
-//       size: 12,
-//       font,
-//       color: rgb(0, 0, 0), // Write new text
-//     });
-
-//     const updatedPdfBytes = await pdfDoc.save();
-//     const blob = new Blob([updatedPdfBytes], { type: "application/pdf" });
-//     const updatedPdfURL = URL.createObjectURL(blob);
-
-//     setResumeURL(updatedPdfURL); // Update iframe to show edited PDF
-//   };
-
-//   // Open in PDFescape editor
-//   const openInSmallpdf = () => {
-//     const smallpdfURL = `https://smallpdf.com/edit-pdf?url=${encodeURIComponent(resumeURL)}`;
-//     window.open(smallpdfURL, "_blank");
-//   };
-
-//   return (
-//     <div style={{ padding: "20px", maxWidth: "100%", margin: "0 auto", backgroundColor: "#f9f9f9", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)" }}>
-//     {/* Editable fields */}
-//     <div style={{ marginBottom: "20px" }}>
-//       {/* <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
-//         Skills:
-//         <textarea
-//           name="skills"
-//           value={editableContent.skills}
-//           onChange={handleContentChange}
-//           rows={2}
-//           style={{
-//             width: "100%",
-//             padding: "8px",
-//             borderRadius: "4px",
-//             border: "1px solid #ddd",
-//             boxSizing: "border-box",
-//             marginBottom: "10px",
-//             fontSize: "14px",
-//             backgroundColor: "#fff",
-//             resize: "vertical"
-//           }}
-//         />
-//       </label> */}
-//       {/* <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
-//         Experience:
-//         <textarea
-//           name="experience"
-//           value={editableContent.experience}
-//           onChange={handleContentChange}
-//           rows={2}
-//           style={{
-//             width: "100%",
-//             padding: "8px",
-//             borderRadius: "4px",
-//             border: "1px solid #ddd",
-//             boxSizing: "border-box",
-//             marginBottom: "10px",
-//             fontSize: "14px",
-//             backgroundColor: "#fff",
-//             resize: "vertical"
-//           }}
-//         />
-//       </label> */}
-//     </div>
-  
-//     {/* Buttons */}
-//     <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginBottom: "20px" }}>
-//       {/* <button
-//         onClick={updatePDF}
-//         style={{
-//           padding: "10px 20px",
-//           backgroundColor: "#4CAF50",
-//           color: "#fff",
-//           border: "none",
-//           borderRadius: "5px",
-//           fontSize: "16px",
-//           cursor: "pointer",
-//           transition: "background-color 0.3s ease"
-//         }}
-//         onMouseOver={(e) => e.target.style.backgroundColor = "#45a049"}
-//         onMouseOut={(e) => e.target.style.backgroundColor = "#4CAF50"}
-//       >
-//         Update Resume
-//       </button> */}
-//       <button
-//         onClick={openInSmallpdf}
-//         style={{
-//           padding: "10px 20px",
-//           backgroundColor: "#007BFF",
-//           color: "#fff",
-//           border: "none",
-//           borderRadius: "5px",
-//           fontSize: "16px",
-//           cursor: "pointer",
-//           transition: "background-color 0.3s ease"
-//         }}
-//         onMouseOver={(e) => e.target.style.backgroundColor = "#0056b3"}
-//         onMouseOut={(e) => e.target.style.backgroundColor = "#007BFF"}
-//       >
-//         Open in PDF Editor
-//       </button>
-//     </div>
-  
-//     {/* Display the PDF */}
-//     <iframe src={resumeURL} width="100%" height="600px" title="Resume" />
-//   </div>
-  
-//   );
-// };
-
-// export default ViewResume;

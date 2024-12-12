@@ -32,6 +32,9 @@ const EmployeeDetailPage = () => {
       });
   }, [id]);
 
+  console.log(employee);
+  
+
   const handleEdit = () => {
     setModalOpen(true); // Open the modal when Edit button is clicked
   };
@@ -222,7 +225,7 @@ const EmployeeDetailPage = () => {
                   to={`/resume/${employee.id}`} // Updated to redirect to the /resume page
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  Download Resume
+                  edit Resume
                 </Link>
                 {/* <Link
                   // href={employee.resume}
