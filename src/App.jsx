@@ -19,6 +19,7 @@ import HrDetail from "./pages/HrDetail.jsx";
 import EmployeeDistributionChart from "./pages/EmployeeGenderLocationDeptStats.jsx";
 import ViewResume from "./pages/ViewResume.jsx";
 import RegisterPage from "./pages/Regiter.jsx";
+import MyProfile from "./pages/MyProfile.jsx";
 
 // const user = {
 //   id: 1,
@@ -95,6 +96,14 @@ function App() {
           element={<Login />}
           // element={user ? <Navigate to="/" /> : <Login />}
         />
+
+<Route
+          path="/my-profile"
+          element={<MyProfile />}
+          // element={user ? <Navigate to="/" /> : <Login />}
+        />
+
+
       </Routes>
       <Toaster position="bottom-center" />
     </Router>
