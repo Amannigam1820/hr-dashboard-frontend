@@ -18,6 +18,7 @@ import HrList from "./pages/HrList.jsx";
 import HrDetail from "./pages/HrDetail.jsx";
 import EmployeeDistributionChart from "./pages/EmployeeGenderLocationDeptStats.jsx";
 import ViewResume from "./pages/ViewResume.jsx";
+import RegisterPage from "./pages/Regiter.jsx";
 
 // const user = {
 //   id: 1,
@@ -85,10 +86,10 @@ function App() {
           }
         />
         {/* Register and Login should not be accessible if user is logged in */}
-        {/* <Route
+        <Route
           path="/register"
-          element={user.isLoggedIn ? <Navigate to="/" /> : <Register />}
-        /> */}
+          element={<RegisterPage/>}
+        />
         <Route
           path="/login"
           element={<Login />}

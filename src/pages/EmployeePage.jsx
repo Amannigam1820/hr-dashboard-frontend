@@ -80,7 +80,7 @@ const columns = [
     accessor: "resume",
     Cell: ({ value }) => (
       <a href={value} target="_blank" rel="noopener noreferrer">
-        <h1 className="hover:scale-110 transition-transform duration-300 ease-in-out">Resume.pdf</h1>
+        <h1 className="hover:scale-110 transition-transform duration-300 ease-in-out">DownLoad Resume</h1>
         {/* <img
           src={value}
           alt="Resume"
@@ -216,6 +216,8 @@ const EmployeePage = () => {
 
         setData(dataArray); // Set the data as an array
         setLoading(false); // Set loading to false after data is fetched
+        console.log(data);
+        
       })
       .catch((err) => {
         setError("Error fetching data: " + err.message); // Handle error

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // For getting employee ID from URL params
-import { Editor } from "@tinymce/tinymce-react"; // TinyMCE editor
-import mammoth from "mammoth"; // Import mammoth for Word-to-HTML conversion
+import { useParams } from "react-router-dom";
+import { Editor } from "@tinymce/tinymce-react"; 
+import mammoth from "mammoth"; 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { PDFDocument } from "pdf-lib";
 
+
+
 const ViewResume = () => {
-  const { id } = useParams(); // Get employee ID from route params
-  const [resumeContent, setResumeContent] = useState(""); // Content for editing
-  const [resumeURL, setResumeURL] = useState(""); // URL of the resume
+  const { id } = useParams(); 
+  const [resumeContent, setResumeContent] = useState(""); 
+  const [resumeURL, setResumeURL] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState();
 
-  // Fetch the resume URL using the provided API
+  
   const fetchResumeURL = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8080/api/employee/${id}`, {
@@ -28,7 +30,7 @@ const ViewResume = () => {
     }
   };
 
-  // Handle file upload and convert Word to HTML using Mammoth
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
@@ -37,7 +39,7 @@ const ViewResume = () => {
         const arrayBuffer = e.target.result;
         mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
           .then((result) => {
-            setResumeContent(result.value); // Set the Word file content to the editor
+            setResumeContent(result.value); 
           })
           .catch((error) => {
             console.error("Error converting Word document:", error);
@@ -45,14 +47,119 @@ const ViewResume = () => {
       };
       reader.readAsArrayBuffer(file);
     }
+
   };
 
-  // Fetch resume content if the URL is available
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  
+  //   if (file) {
+  //     // Handle Word Documents (.docx)
+  //     if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+  //       const reader = new FileReader();
+  //       reader.onload = (e) => {
+  //         const arrayBuffer = e.target.result;
+  //         mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+  //           .then((result) => {
+  //             setResumeContent(result.value); // Set converted Word document content
+  //           })
+  //           .catch((error) => {
+  //             console.error("Error converting Word document:", error);
+  //           });
+  //       };
+  //       reader.readAsArrayBuffer(file);
+  //     } 
+  //     // Handle PDF Files
+  //     if (file) {
+  //       // Handle PDF Files
+  //       if (file.type === "application/pdf") {
+  //         const reader = new FileReader();
+  //         reader.onload = (e) => {
+  //           const typedArray = new Uint8Array(e.target.result);
+    
+  //           const options = {
+  //             type: 'text',  // 'text' or 'html'
+  //           };
+    
+  //           const processor = pdfExtract(typedArray, options, (err, data) => {
+  //             if (err) {
+  //               console.error("Error extracting text from PDF:", err);
+  //               return;
+  //             }
+    
+  //             // data.text will have the extracted text
+  //             setResumeContent(data.text);  // Set the extracted text
+  //           });
+  //         };
+  //         reader.readAsArrayBuffer(file);
+  //       }
+  //     }
+  //     else {
+  //       console.error("Unsupported file format. Please upload a .docx or .pdf file.");
+  //     }
+  //   }
+  // };
+
+
+
+// const handleFileChange = (event) => {
+//   const file = event.target.files[0];
+
+//   if (file) {
+//     const reader = new FileReader();
+
+//     if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+//       // Handle DOCX files
+//       reader.onload = (e) => {
+//         const arrayBuffer = e.target.result;
+//         mammoth
+//           .convertToHtml({ arrayBuffer: arrayBuffer })
+//           .then((result) => {
+//             setResumeContent(result.value);
+//           })
+//           .catch((error) => {
+//             console.error("Error converting Word document:", error);
+//           });
+//       };
+//       reader.readAsArrayBuffer(file);
+//     } else if (file.type === "application/pdf") {
+//       // Handle PDF files
+//       reader.onload = async (e) => {
+//         try {
+//           const arrayBuffer = e.target.result;
+
+//           // Ensure PDF.js worker is configured
+//           pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
+//           const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+//           let text = '';
+//           for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+//             const page = await pdf.getPage(pageNum);
+//             const textContent = await page.getTextContent();
+//             const pageText = textContent.items.map((item) => item.str).join(' ');
+//             text += `<p>${pageText}</p>\n\n`; // Wrap text in paragraphs
+//           }
+
+//           setResumeContent(text); // Set PDF content as HTML
+//         } catch (error) {
+//           console.error("Error converting PDF:", error);
+//         }
+//       };
+//       reader.readAsArrayBuffer(file);
+//     } else {
+//       console.error("Unsupported file type");
+//     }
+//   }
+// };
+
+  
   const fetchResumeContent = async () => {
     try {
       const response = await fetch(resumeURL);
       const arrayBuffer = await response.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
+      //console.log(pdfDoc)
       const pages = pdfDoc.getPages();
 
       let text = "";
@@ -69,8 +176,34 @@ const ViewResume = () => {
     }
   };
 
+
+  // const fetchResumeContent = async () => {
+  //   try {
+  //     // Set the worker source for pdf.js
+  //     pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  //     const response = await fetch(resumeURL);
+  //     const arrayBuffer = await response.arrayBuffer();
+  //     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+  //     let text = '';
+  //     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+  //       const page = await pdf.getPage(pageNum);
+  //       const textContent = await page.getTextContent();
+  //       const pageText = textContent.items.map(item => item.str).join(' ');
+  //       text += pageText + '\n\n';
+  //     }
+      
+  //     setResumeContent(text);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching or parsing PDF:", error);
+  //     setLoading(false);
+  //   }
+  // };
+  
+
   useEffect(() => {
-    // Fetch resume URL first, then fetch its content
+    
     const fetchData = async () => {
       await fetchResumeURL();
     };
@@ -83,55 +216,55 @@ const ViewResume = () => {
     }
   }, [resumeURL]);
 
-  // Generate updated PDF from the content of the TinyMCE editor
+  
   const generateUpdatedPdf = async () => {
     try {
-      // Get the content of the editor (TinyMCE editor inside an iframe)
+      
       const editorContent = document.querySelector(".tox-edit-area iframe").contentDocument.body;
 
-      // Temporarily remove red underlines caused by spellcheck
+      
       const redUnderlines = editorContent.querySelectorAll("span[style*='color: red;'][style*='text-decoration: underline;']");
       redUnderlines.forEach((span) => {
-        // Remove the red underline by clearing the styles
-        span.style.textDecoration = "none";  // Remove underline
-        span.style.color = "black";  // Change color to black or any neutral color
+        
+        span.style.textDecoration = "none"; 
+        span.style.color = "black"; 
       });
 
-      // Capture the editor content as a high-resolution image
+      
       const canvas = await html2canvas(editorContent, { scale: 2 });
       const imageData = canvas.toDataURL("image/png");
 
-      // Calculate the desired dimensions for the PDF page (A4 size in points)
-      const pdfWidth = 530;  // A4 width in points (in px: 210mm * 72 DPI)
-      const leftMargin = 25;  // Left margin
-      const rightMargin = 25;  // Right margin
+      
+      const pdfWidth = 530;  
+      const leftMargin = 25; 
+      const rightMargin = 25; 
 
-      // Calculate the dynamic PDF height based on content
-      const contentHeight = canvas.height * (pdfWidth / canvas.width);  // Scale height to maintain aspect ratio
-      const pdfHeight = contentHeight < 500 ? 500 : contentHeight; // Ensure the minimum height of A4 page (650px)
+      
+      const contentHeight = canvas.height * (pdfWidth / canvas.width);  
+      const pdfHeight = contentHeight < 500 ? 500 : contentHeight; 
 
-      // Create a PDF document using jsPDF with dynamically adjusted height
+      
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "px",
-        format: [pdfWidth, pdfHeight], // Use dynamic height
+        format: [pdfWidth, pdfHeight], 
       });
 
-      // Adjust the width for margins
-      const scaledWidth = pdfWidth - leftMargin - rightMargin;  // Adjusted width after margins
-      const scale = scaledWidth / canvas.width;  // Scale to fit the adjusted width
-      const scaledHeight = canvas.height * scale;  // Calculate height based on the scale
+      
+      const scaledWidth = pdfWidth - leftMargin - rightMargin;  
+      const scale = scaledWidth / canvas.width;  
+      const scaledHeight = canvas.height * scale; 
 
-      // Add the image to the PDF, with margins taken into account
+      
       pdf.addImage(imageData, "PNG", leftMargin, 0, scaledWidth, scaledHeight);
 
-      // Save the PDF
+      
       pdf.save(`${name}_resume.pdf`);
 
-      // Optionally, you can restore the original red underlines if needed
+      
       redUnderlines.forEach((span) => {
-        span.style.textDecoration = "underline";  // Restore underline
-        span.style.color = "red";  // Restore red color
+        span.style.textDecoration = "underline";  
+        span.style.color = "red";  
       });
 
     } catch (error) {
@@ -167,7 +300,7 @@ const ViewResume = () => {
               toolbar:
                 "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat" | "save",
               paste_word_valid_elements: "strong,em,u,a,ul,ol,li,p,h1,h2,h3,h4,h5,h6,table,tr,th,td,br",
-              paste_word_import_styles: true, // Import styles from Word
+              paste_word_import_styles: true, 
               tinycomments_mode: "embedded",
               tinycomments_author: "Author name",
               mergetags_list: [

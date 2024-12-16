@@ -30,7 +30,7 @@ const Navbar = () => {
         toast.error(message);
       }
     } catch (error) {
-      toast.error("Signin Failed");
+      toast.error("Signout Failed");
     }
   };
 
@@ -46,40 +46,98 @@ const Navbar = () => {
         <div className="ml-auto flex items-center space-x-6">
           {user.isLoggedIn ? (
             <>
-              <Link to="/dashboard" className="text-white hover:text-blue-200">
-                Dashboard
-              </Link>
-              <Link to="/employees" className="text-white hover:text-blue-200">
-                Employees
-              </Link>
-              <Link
-                to="/create-employee"
-                className="text-white hover:text-blue-200"
-              >
-                Add Employee
-              </Link>
+              {user.user.role === "Employee" && (
+                <>
+                 <Link
+                    to="/employees"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Employees
+                  </Link>
+                  <Link
+                    to="/my-profile"
+                    className="text-white hover:text-blue-200"
+                  >
+                    My Profile
+                  </Link>
+                  <button
+                    className="text-white hover:text-blue-200"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+
               {user.user.role === "Super-Admin" && (
                 <>
-                <Link
-                  to="/create-hr"
-                  className="text-white hover:text-blue-200"
-                >
-                  Create New HR
-                </Link>
-                 <Link
-                 to="/all-hr"
-                 className="text-white hover:text-blue-200"
-               >
-                 HR'S
-               </Link>
-               </>
+                  <Link
+                    to="/dashboard"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/employees"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Employees
+                  </Link>
+                  <Link
+                    to="/create-employee"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Add Employee
+                  </Link>
+                  <Link
+                    to="/create-hr"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Create New HR
+                  </Link>
+                  <Link
+                    to="/all-hr"
+                    className="text-white hover:text-blue-200"
+                  >
+                    HR's
+                  </Link>
+                  <button
+                    className="text-white hover:text-blue-200"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </>
               )}
-              <button
-                className="text-white hover:text-blue-200"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+
+              {user.user.role === "HR-Admin" && (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/create-employee"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Add Employee
+                  </Link>
+                  <Link
+                    to="/create-hr"
+                    className="text-white hover:text-blue-200"
+                  >
+                    Create New HR
+                  </Link>
+                  <button
+                    className="text-white hover:text-blue-200"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
             </>
           ) : (
             <>
