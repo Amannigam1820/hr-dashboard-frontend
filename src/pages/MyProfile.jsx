@@ -224,7 +224,7 @@ const MyProfile = () => {
                   Download Resume
                 </Link> */}
               </div>
-              {/* {showResume && (
+              {showResume && (
                 <div className="mt-4">
                   <iframe
                     src={employee.resume}
@@ -232,7 +232,7 @@ const MyProfile = () => {
                     className="w-full h-screen border border-gray-300 rounded"
                   ></iframe>
                 </div>
-              )} */}
+              )}
             </div>
           ) : (
             <div>No employee data available</div>

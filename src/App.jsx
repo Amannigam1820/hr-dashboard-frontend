@@ -20,6 +20,7 @@ import EmployeeDistributionChart from "./pages/EmployeeGenderLocationDeptStats.j
 import ViewResume from "./pages/ViewResume.jsx";
 import RegisterPage from "./pages/Regiter.jsx";
 import MyProfile from "./pages/MyProfile.jsx";
+import TestPdf from "./pages/TestPdf.jsx"
 
 // const user = {
 //   id: 1,
@@ -46,7 +47,7 @@ function App() {
     }
 
     if (data) {
-     // console.log("User Data:", data);
+      // console.log("User Data:", data);
       dispatch(userExists(data));
 
       // Dispatch or use the data as needed
@@ -60,11 +61,11 @@ function App() {
         {/* Use ProtectedRoute for home or other protected pages */}
         <Route path="/" element={<HomePage />} />
         <Route path="/create-employee" element={<CreateEmployeePage />} />
-        <Route path="/employee-detail/:id" element={<EmployeeDetailPage/>} />
-        <Route path="/all-hr" element={<HrList/>} />
-        <Route path="/hr-detail/:id" element={<HrDetail/>}/>
-        <Route path="/dashboard" element={<EmployeeDistributionChart/>}/>
-        <Route path="/resume/:id" element={<ViewResume/>}/>
+        <Route path="/employee-detail/:id" element={<EmployeeDetailPage />} />
+        <Route path="/all-hr" element={<HrList />} />
+        <Route path="/hr-detail/:id" element={<HrDetail />} />
+        <Route path="/dashboard" element={<EmployeeDistributionChart />} />
+        <Route path="/resume/:id" element={<ViewResume />} />
 
         <Route
           path="/create-hr"
@@ -87,23 +88,19 @@ function App() {
           }
         />
         {/* Register and Login should not be accessible if user is logged in */}
-        <Route
-          path="/register"
-          element={<RegisterPage/>}
-        />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/testpdf" element={<TestPdf/>} />
         <Route
           path="/login"
           element={<Login />}
           // element={user ? <Navigate to="/" /> : <Login />}
         />
 
-<Route
+        <Route
           path="/my-profile"
           element={<MyProfile />}
           // element={user ? <Navigate to="/" /> : <Login />}
         />
-
-
       </Routes>
       <Toaster position="bottom-center" />
     </Router>
@@ -111,4 +108,3 @@ function App() {
 }
 
 export default App;
-

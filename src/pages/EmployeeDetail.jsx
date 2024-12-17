@@ -12,6 +12,7 @@ const EmployeeDetailPage = () => {
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false); // Modal visibility state
   const [editedEmployee, setEditedEmployee] = useState({}); // State to hold edited employee data
+  const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const [updateEmployee, { isLoading: isUpdating }] =
     useUpdateEmployeeMutation(); // Destructure the mutation
@@ -32,7 +33,7 @@ const EmployeeDetailPage = () => {
       });
   }, [id]);
 
-  console.log(employee);
+  //console.log(employee);
 
   const handleEdit = () => {
     setModalOpen(true); // Open the modal when Edit button is clicked
@@ -68,32 +69,88 @@ const EmployeeDetailPage = () => {
 
   //console.log(editedEmployee);
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // Update state with selected file
+  };
+
   const handleSaveChanges = async () => {
+    // try {
+    //   // Call the updateEmployee mutation
+    //   const transformedData = {
+    //     ...editedEmployee,
+
+    //     YearsOfExperience: parseFloat(editedEmployee.YearsOfExperience),
+    //     CasualLeave: parseInt(editedEmployee.CasualLeave, 10),
+    //     EarnedLeave: parseInt(editedEmployee.EarnedLeave, 10),
+
+      
+    //   };
+    //   console.log("data before deleting",transformedData);
+
+    //   delete transformedData.experience_letter,
+    //   delete transformedData.releiving_letter
+
+    //   console.log("data after deleeting",transformedData);
+
+    //   // delete transformedData.years_of_experience;
+
+    //   // console.log('Transformed Data:', transformedData);
+
+    //   //delete transformedData.years_of_experience;
+    //   const res = await updateEmployee({ id, empData: transformedData });
+    //   console.log(res);
+    //   toast.success("Employee details updated successfully!");
+    //   setModalOpen(false); // Close the modal after successful update
+    //   setEmployee(editedEmployee); // Update the displayed employee data
+    // } catch (err) {
+    //   toast.error("Error updating employee details: " + err.message);
+    // }
+
     try {
-      // Call the updateEmployee mutation
-      const transformedData = {
-        ...editedEmployee,
+      const formData = new FormData();
+      
+      // Append all the edited fields to the FormData object
+      Object.keys(editedEmployee).forEach((key) => {
+        formData.append(key, editedEmployee[key]);
+      });
 
-        YearsOfExperience: parseFloat(editedEmployee.YearsOfExperience),
-        CasualLeave: parseInt(editedEmployee.CasualLeave, 10),
-        EarnedLeave: parseInt(editedEmployee.EarnedLeave, 10),
-      };
+      console.log(formData);
 
-      console.log(transformedData);
+      // If a file is selected, append it to FormData
+      if (file) {
+        formData.append("resume", file); // Assuming you're uploading a resume
+      }
 
-      // delete transformedData.years_of_experience;
 
-      // console.log('Transformed Data:', transformedData);
+      
+      
 
-      //delete transformedData.years_of_experience;
-      const res = await updateEmployee({ id, empData: transformedData });
-      console.log(res);
+      // Send the FormData to the backend using axios
+      const response = await axios.put(
+        `http://127.0.0.1:8080/api/employee/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for file uploads
+          },
+          withCredentials: true, // Ensure the credentials (cookies, session, etc.) are sent
+        }
+      );
+
       toast.success("Employee details updated successfully!");
       setModalOpen(false); // Close the modal after successful update
-      setEmployee(editedEmployee); // Update the displayed employee data
+      setEmployee(response.data.hr); // Update the displayed employee data
+      navigate(`/employee-detail/${id}`)
     } catch (err) {
       toast.error("Error updating employee details: " + err.message);
     }
+
+
+
+
+
+
+
   };
 
   if (loading) {
@@ -104,7 +161,7 @@ const EmployeeDetailPage = () => {
     return <div className="text-red-500">{error}</div>;
   }
 
-  console.log(employee);
+ // console.log(employee.resume);
 
   return (
     <div className="container mx-auto p-6">
@@ -225,14 +282,14 @@ const EmployeeDetailPage = () => {
                 >
                   Edit Resume
                 </Link>
-                {/* <Link
-                  // href={employee.resume}
-                  // target="_blank"
-                  // rel="noopener noreferrer"
+                <a
+                  href={employee.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
                   Download Resume
-                </Link> */}
+                </a>
               </div>
             </div>
           ) : (
@@ -398,7 +455,8 @@ const EmployeeDetailPage = () => {
                 <input
                   type="file"
                   name="resume"
-                  onChange={handleModalChange}
+                  value={editedEmployee.Resume}
+                  onChange={handleFileChange}
                   className="px-4 py-2 border rounded-md"
                 />
               </div>
