@@ -33,7 +33,6 @@ const EmployeeDetailPage = () => {
   }, [id]);
 
   console.log(employee);
-  
 
   const handleEdit = () => {
     setModalOpen(true); // Open the modal when Edit button is clicked
@@ -106,7 +105,6 @@ const EmployeeDetailPage = () => {
   }
 
   console.log(employee);
-  
 
   return (
     <div className="container mx-auto p-6">
@@ -393,6 +391,15 @@ const EmployeeDetailPage = () => {
                   onChange={handleModalChange}
                   className="px-4 py-2 border rounded-md"
                   placeholder="Enter employee's Contact"
+                />
+              </div>
+              <div className="flex flex-col mb-4">
+                <label className="font-bold text-gray-600">Resume :</label>
+                <input
+                  type="file"
+                  name="resume"
+                  onChange={handleModalChange}
+                  className="px-4 py-2 border rounded-md"
                 />
               </div>
               {/* Add more fields here as needed */}
