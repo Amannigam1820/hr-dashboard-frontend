@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
 import mammoth from "mammoth";
@@ -6,6 +6,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { PDFDocument } from "pdf-lib";
 import * as pdfjs from "pdfjs-dist";
+import html2pdf from "html2pdf.js"; 
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
@@ -16,6 +17,7 @@ const ViewResume = () => {
   const [resumeURL, setResumeURL] = useState("");
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState();
+  const editorRef = useRef(null);
 
   // Fetch resume URL from backend
   const fetchResumeURL = async () => {
@@ -58,41 +60,46 @@ const ViewResume = () => {
         try {
           const arrayBuffer = await file.arrayBuffer();
           const pdfDoc = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-
+          
           let extractedHtml = "";
-
+          
           for (let i = 1; i <= pdfDoc.numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            console.log(page);
-
+            const viewport = page.getViewport({ scale: 1 });
+          
             const textContent = await page.getTextContent();
-
-            // Debugging: Check what the textContent.items contains
-           // console.log(`Text content of page ${i}:`, textContent.items);
-
-            // Convert the text content into HTML with basic styles (optional)
-            const pageHtml = textContent.items
+          
+            const textHtml = textContent.items
               .map((item) => {
-                const { str, transform, fontSize } = item;
-                // You can add custom styles based on the transform (e.g., for positioning) or fontSize
-                const style = `font-size:${
-                  fontSize || 12
-                }px; transform: translate(${transform[4]}px, ${
-                  transform[5]
-                }px);`;
+                const { str, transform, width } = item;
+                const x = transform[4];
+                const y = viewport.height - transform[5];
+                const fontSize = Math.abs(transform[0]);
+          
+                const style = `
+                  position: absolute;
+                  left: ${x}px;
+                  top: ${y}px;
+                  font-size: ${fontSize}px;
+                  white-space: pre;
+                `;
+          
                 return `<span style="${style}">${str}</span>`;
               })
               .join("");
-
-            // Add the page HTML to the result
-            extractedHtml += `<div style="margin-bottom: 20px; page-break-before: always;"><h3></h3>${pageHtml}</div>`;
+          
+            extractedHtml += `
+              <div style="position: relative; width: ${viewport.width}px; height: ${viewport.height}px; overflow: hidden; margin-bottom: 20px; page-break-before: always; background: white; border: 2px black;">
+                ${textHtml}
+              </div>`;
           }
-
-          // Set the HTML content for rendering in the editor
-          setResumeContent(extractedHtml);
+          
+          // Wrap extracted HTML with a div to center-align content
+          setResumeContent(`<div style="text-align: center;">${extractedHtml}</div>`);
         } catch (error) {
-          console.error("Error extracting content from PDF:", error);
+          console.error("Error extracting PDF content:", error);
         }
+        
       }
     }
   };
@@ -137,26 +144,27 @@ const ViewResume = () => {
  // Generate PDF from the edited resume content
   
  const generateUpdatedPdf = () => {
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4', // A4 size
-  });
+  if (editorRef.current) {
+    const editorContent = editorRef.current.getContent();
 
-  // Get the plain text by stripping HTML tags
-  const plainText = resumeContent.replace(/<\/?[^>]+(>|$)/g, "");
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = editorContent;
+    document.body.appendChild(tempDiv);
 
-  // Split the plain text into lines
-  const lines = doc.splitTextToSize(plainText, 180); // Adjust 180 to fit your content width
+    html2canvas(tempDiv, {
+      scale: 2, // Increase scale for better resolution
+      width: 165 * 3.7795275591, // Convert A4 width (210mm) to px (approx)
+      height: 235 * 3.7795275591, // Convert A4 height (297mm) to px (approx)
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+      pdf.save(`${name}_resume.pdf`);
 
-  // Add the lines of text to the PDF
-  doc.setFontSize(12);
-  doc.text(lines, 10, 10); // Starting position: x=10, y=10
-
-  // Save the PDF after content is added
-  doc.save(`${name}_resume.pdf`);
+      document.body.removeChild(tempDiv);
+    });
+  }
 };
-
 
 
   return (
@@ -181,8 +189,10 @@ const ViewResume = () => {
           <Editor
             apiKey="n7igyli7typhj3datc05fv28dnj859hzav54ewi6plp2iih6"
             value={resumeContent}
+            onInit={(evt, editor) => (editorRef.current = editor)}
             onEditorChange={(content) => setResumeContent(content)}
             init={{
+             
               plugins: [
                 "anchor",
                 "autolink",
@@ -230,6 +240,7 @@ const ViewResume = () => {
               toolbar:
                 "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat" |
                 "save",
+               
               paste_word_valid_elements:
                 "strong,em,u,a,ul,ol,li,p,h1,h2,h3,h4,h5,h6,table,tr,th,td,br",
               paste_word_import_styles: true,
@@ -243,8 +254,9 @@ const ViewResume = () => {
                 respondWith.string(() =>
                   Promise.reject("See docs to implement AI Assistant")
                 ),
+            
             }}
-            className="bg-white rounded-lg shadow-lg p-2"
+            className="bg-white rounded-lg shadow-lg p-2 "
           />
 
           <div className="flex justify-center mt-8">
@@ -252,7 +264,7 @@ const ViewResume = () => {
               onClick={generateUpdatedPdf}
               className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all"
             >
-              formate resume
+              Generate Resume
             </button>
           </div>
         </>
