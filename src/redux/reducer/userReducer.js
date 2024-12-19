@@ -4,7 +4,8 @@ const initialState = {
   user: null,
   //  updatedUser:null,
   loader: true,
-  isLoggedIn : false
+  isLoggedIn : false,
+  filters : null
 };
 
 const userSlice = createSlice({
@@ -21,13 +22,12 @@ const userSlice = createSlice({
       state.loader = true;
       state.isLoggedIn = false
     },
-    // updatedUserInformation:(state,action)=>{
-    //     state.updatedUser = action.payload
-    //     state.loader = false;
-    // }
+    filterExists : (state, action)=>{
+      state.filters = action.payload
+    }
   },
 });
 
 export default userSlice;
 
-export const { userExists, userNotExist } = userSlice.actions;
+export const { userExists, userNotExist , filterExists} = userSlice.actions;

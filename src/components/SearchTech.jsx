@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux'; // Import useDispatch hook
+import { filterExists } from '../redux/reducer/userReducer'; // Import the filterExists action
 
 const SearchTech = () => {
   const [techstack, setTechstack] = useState([]);
-  const [selectedTech, setSelectedTech] = useState(''); // To store selected techstack
+  const [selectedTech, setSelectedTech] = useState('');
+  const dispatch = useDispatch(); // Initialize useDispatch
 
   useEffect(() => {
-    // Fetch techstack data from the API
     const fetchTechstack = async () => {
       try {
         const response = await fetch('http://127.0.0.1:8080/api/employee/techstack', {
           method: 'GET',
-          credentials: 'include', // Ensure cookies are sent with the request
+          credentials: 'include',
         });
         const data = await response.json();
         if (data.success) {
-          setTechstack(data['tech-stack']); // Access the 'tech-stack' array
+          setTechstack(data['tech-stack']);
         }
       } catch (error) {
         console.error('Error fetching techstack:', error);
@@ -25,7 +27,11 @@ const SearchTech = () => {
   }, []);
 
   const handleTechSelect = (e) => {
-    setSelectedTech(e.target.value); // Set the selected tech stack
+    const selectedTech = e.target.value;
+    setSelectedTech(selectedTech);
+
+    // Dispatch filterExists action with selected tech
+    dispatch(filterExists(selectedTech));
   };
 
   return (
@@ -38,18 +44,14 @@ const SearchTech = () => {
         <option value="" disabled>Select a techstack</option>
         {techstack.length > 0 ? (
           techstack.map((tech, index) => (
-            <option key={index} value={tech.trim()}>{tech.trim()}</option> // Display tech name in dropdown
+            <option key={index} value={tech.trim()}>
+              {tech.trim()}
+            </option>
           ))
         ) : (
           <option value="" disabled>No tech stacks available</option>
         )}
       </select>
-
-      {/* {selectedTech && (
-        <div className="mt-2">
-          <p className="text-gray-700">You selected: <strong>{selectedTech}</strong></p>
-        </div>
-      )} */}
     </div>
   );
 };
