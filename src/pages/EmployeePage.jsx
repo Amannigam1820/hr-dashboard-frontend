@@ -176,13 +176,12 @@ const handleDelete = async (employee) => {
 
 const EmployeePage = () => {
   const [data, setData] = useState([{}]);
+  const [allData, setAllData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const filter = useSelector((state) => state.user.filters);
   console.log(filter);
-  
-
 
   // useEffect(() => {
   //   // Fetch data from the API with credentials
@@ -212,10 +211,10 @@ const EmployeePage = () => {
 
         const response = await axios.get(url, { withCredentials: true });
         console.log(response);
-        
+
         const dataArray = Object.values(response.data.data);
         console.log(dataArray);
-        
+
         setData(dataArray);
         setLoading(false);
       } catch (err) {
@@ -258,6 +257,23 @@ const EmployeePage = () => {
       {/* Left side for Employee Table */}
       <div className="w-3/4 p-6">
         <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md">
+          <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded-lg shadow-md border border-blue-200">
+            <p className="text-lg font-semibold">
+              {filter !== null ? (
+                <>
+                
+                  <span className="font-bold text-blue-900">{filter}</span>,
+                  Total Employees:{" "}
+                  <span className="font-bold text-blue-900">{data.length}</span>
+                </>
+              ) : (
+                <>
+                  Total Employees:{" "}
+                  <span className="font-bold text-blue-900">{data.length}</span>
+                </>
+              )}
+            </p>
+          </div>
           <table
             {...getTableProps()}
             className="min-w-full table-auto border-separate border-spacing-0"
