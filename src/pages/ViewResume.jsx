@@ -187,7 +187,7 @@ const ViewResume = () => {
           </div>
 
           <Editor
-            apiKey="n7igyli7typhj3datc05fv28dnj859hzav54ewi6plp2iih6"
+            apiKey="9hgzjx0g28z1qy1jg1o0a75ld9eq9x53hqoiqg8f5mtu1xyl"
             value={resumeContent}
             onInit={(evt, editor) => (editorRef.current = editor)}
             onEditorChange={(content) => setResumeContent(content)}
